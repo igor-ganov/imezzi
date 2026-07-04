@@ -1,0 +1,33 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  readonly title: string;
+  readonly description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <script is:inline>
+      // Resolve theme pre-paint: stored preference wins, else system.
+      const pref = localStorage.getItem('theme-pref') ?? 'system';
+      const system = matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+      const theme = { light: 'light', dark: 'dark', system }[pref];
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.dataset.themePref = pref;
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

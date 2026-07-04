@@ -1,0 +1,15 @@
+{
+  // Cloudflare Workers deploy: static assets (dist/) + a worker that
+  // proxies the AMT / geoportal APIs the browser cannot call directly
+  // (CORS). Run `bun run build` first; `bun run deploy` uploads both.
+  // Auth: CLOUDFLARE_EMAIL + CLOUDFLARE_API_KEY (Global API Key,
+  // scannable `cfk_` format) — NOT a Bearer API token.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "imezzi",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-06-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS"
+  }
+}

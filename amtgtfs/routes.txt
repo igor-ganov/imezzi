@@ -1,0 +1,186 @@
+route_id,route_short_name,route_long_name,route_desc,route_type
+001-179,1,"P.zza Caricamento - Via Camozzini (Voltri)",,3
+003-179,3,"Staz. Principe - Sestri (Via Soliman)",,3
+005-179,5,"Via di Francia - Erzelli (Polo tecnologico)",,3
+006-179,6,"P.za Savio (Cornigliano) - Erzelli",,3
+007-179,7,"V. Fanti D'Italia - V.Brin - V. Gallino (PonteX)",,3
+008-179,8,"Via Avio (S.P.d'Arena) - Via Morasso (Bolzaneto)",,3
+009-179,9,"P.za Caricamento - Rivarolo- Via Gallino(PonteX)",,3
+013-179,13,"Pian Martello(Prato) - Staglieno- Via Turati",,3
+014-179,14,"Pian Martello(Prato) - Staglieno- Staz. Brignole",,3
+015-179,15,"Quinto (Gianellii)-Albaro-Tommaseo-Brignole Fs",,3
+017-179,17,"Nervi(Commercio)-C.so Europa-Brignole-Ceccardi",,3
+018-179,18,"S. Martino H -Terralba - Brignole - Degola (Samp)",,3
+020-179,20,"Via Rimassa-DeFerrari-Principe-P.za V. Veneto",,3
+031-179,31,"V Maggio(H Gaslini)-P.Sturla-Cso Marconi-Brignole",,3
+032-179,32,"P.za Caricamento --> L.go S.Francesco da Paola",,3
+034-179,34,"P.le Resasco (Staglieno)-Manin-L.go Zecca-Principe",,3
+035-179,35,"Via Vannucci-H Galliera-De Ferrari-L.go S.F. Paola",,3
+036-179,36,"P.zza Merani-Brignole-P.zza Manin-V.Fanti D'Italia",,3
+037-179,37,"Via dei Platani (Marassi) -Brignole-De Ferrari",,3
+038-179,38,"Principe - P.za Dinegro- Via Bianco (Granarolo)",,3
+039-179,39,"Brignole - De Ferrari - P.za Nunziata -Via Vesuvio",,3
+040-179,40,"Brignole -De Ferrari-Nunziata-Via Costanzi (Righi)",,3
+042-179,42,"Via Isonzo - De Gaspari - De Ferrari",,3
+043-179,43,"Brignole - Ospedale S. Martino - Brignole",,3
+044-179,44,"Pza Rotonda(Borgoratti)-S.Martino-Tommaseo-V Dante",,3
+045-179,45,"V. V Maggio (Gaslini) -V.Sturla-S.Martino-Brignole",,3
+046-179,46,"V. Donghi (S.Fruttuoso)-Brignole-De Ferrari-Donghi",,3
+047-179,47,"Via Pinetti - Brignole - Via Pinetti (Quezzi)",,3
+048-179,48,"Via Geirato (Molassana)-De Stefanis-P.S S.Martino",,3
+049-179,49,"Via Ginestre - C.so Montegrappa - Staz. Brignole",,3
+051-179,51,"Via Biancheri (Sestri) - Via Rollino",,3
+052-179,52,"V. Biancheri (Sestri) - Via S.Alberto (Cim Sestri)",,3
+053-179,53,"P.za Pallavicini (Rivarolo)-Borzoli-Travi (Sestri)",,3
+054-179,54,"Staz. Principe -V.Lagaccio- Staz. Principe",,3
+057-179,57,"Via Rossini (Rivarolo) - P.za Garbo (Chiesa)",,3
+059-179,59,"V dei Landi - Cantore - B.Powell - C.so Belvedere",,3
+062-179,62,"Via Avio - Coronata - Testa di Cavallo",,3
+063-179,63,"Via Avio (Sampierdarena) - Via Anfossi (PonteX)",,3
+064-179,64,"P.za Manin -Righi -Belvedere Da Passano (Oregina)",,3
+065-179,65,"Via Caffaro (S.Cipriano) - PonteX - P.za Cesino",,3
+066-179,66,"Via Milano - Cim.Castagna - P.za Montano (Samp)",,3
+067-179,67,"Via Berghini (Camaldoli)-Pianderlino-P.za Martinez",,3
+071-179,71,"P.zza Rapisardi (Pegli) - S. Carlo di Cese",,3
+074-179,74,"Via Custo (Bolzaneto) - P.za Chiesa di Murta",,3
+082-179,82,"P.za S.Maria (Quezzi) - Staz. Brignole",,3
+084-179,84,"Via Amarena (Marassi) - Staz. Brignole",,3
+085-179,85,"P.za S.Giorgio di Bavari - Borgoratti - Brignole",,3
+086-179,86,"P.za Grosso (S.Desiderio) - Borgoratti - Brignole",,3
+087-179,87,"P.za Don Canepa (Apparizione) - Borgor - Brignole",,3
+088-179,88,"P.za Grosso (S.Des)-Borgor-P.za Don Canepa (Appar)",,3
+089-179,89,"Via Giovanni XXIII - P.za Martinez (S.Fruttuoso)",,3
+093-179,93,"P.za Ponchielli (Pegli FS) - Via Vespucci",,3
+094-179,94,"Via Stassano (Palmaro) - Pra' FS",,3
+096-179,96,"Via Don Verita (Voltri) - Via Nuova Crevari",,3
+097-179,97,"Via Don Verita (Voltri) - Via Fiorino",,3
+101-179,101,"P.le Parks (Voltri) - Via Acquasanta (FS)",,3
+128-179,128,"Erzelli - P.za Baracca - P.za di Vittorio",,3
+151-179,151,"Via Biancheri (Sestri) - Viale Villa Gavotti",,3
+158-179,158,"P.Consigliere (Ch.Costa)-P Baracca-P.Consigliere",,3
+159-179,159,"P.Consigliere-P.Baracca-P.Consigliere",,3
+160-179,160,"Cornigliano F.S. - Via Dei Sessanta",,3
+165-179,165,"P.za Montano (S.P.d'Arena) - Via Fanti - Montano",,3
+170-179,170,"Piazza Virgo Potens - Via Travi (Sestri)",,3
+172-179,172,"Panigaro - P.za Baracca (Sestri)",,3
+188-179,188,"Pra' FS - Via Pavese",,3
+189-179,189,"P. Ponchielli (Pegli FS) - Quartiere Giardino",,3
+190-179,190,"P.za Ponchielli (Pegli FS)-Via Laviosa",,3
+192-179,192,"Via Staz.Voltri-V.Martiri Turch.-2 Dic-Staz.Voltri",,3
+193-179,193,"Voltri (Verita) - Osp. S. Carlo - Montanella",,3
+199-179,199,"Staz.Voltri-Turchino-Calamandrei-Verita (Voltri)",,3
+270-179,270,"Via Brin(Rivarolo) - Begato - Via Reta(Bolzaneto)",,3
+272-179,272,"P.za Pallavicini (Rivarolo) - V Cambiaso (Begato)",,3
+273-179,273,"Via Rossini (Rivarolo) - Tofane",,3
+275-179,275,"Via Bolzaneto - Via Ch. Geminiano (Campora)",,3
+276-179,276,"Via Bolzaneto - Morego - S. Biagio",,3
+277-179,277,"Via Bolzaneto - Cremeno",,3
+340-179,340,"Via Asilo Garbarino - V.Milano - P.za Di Negro",,3
+355-179,355,"Via Spallanzani (S.Teodoro) - Via Piani di Fregoso",,3
+356-179,356,"Via Fea - V.Fereggiano - P.za Giusti - Brignole",,3
+374-179,374,"Via Cancelliere -Sp. Castelletto",,3
+375-179,375,"Spianata Castelletto - Via Chiodo",,3
+377-179,377,"Spianata Castelletto - Via Ausonia",,3
+381-179,381,"Via Monticelli (Marassi) - Via Biga",,3
+383-179,383,"Via Monticelli (Marassi) - Via Robino",,3
+385-179,385,"Via G.Torti (S. Fruttuoso) - Via Imperiale",,3
+451-179,451,"Via Bobbio (Staglieno) - Via Tortona",,3
+470-179,470,"S. Martino di Struppa - Bavari - S. Eusebio",,3
+474-179,474,"P.le Bligny - Via Terpi - Preli",,3
+477-179,477,"V. Geirato(Molassana) - V. S. Felice (Cartagenova)",,3
+479-179,479,"S. Martino di Struppa - Molassana",,3
+480-179,480,"S.Eusebio -Via Val Trebbia -P.le Bligny -Brignole",,3
+481-179,481,"Molassana (Geirato) - Pino Soprano (Loc.Torrazza)",,3
+482-179,482,"S.Eusebio -Via Mogadiscio -P.le Bligny -Brignole",,3
+512-179,512,"Via Iris(Quarto)-Ciclamini-P.za Ragazzi 99(Sturla)",,3
+513-179,513,"P.za Ragazzi 99-Via Nenni-P.za Ragazzi 99 (Sturla)",,3
+515-179,515,"Franchini-Oberdan-Somma-Quinto (Gianelli)",,3
+516-179,516,"Via S.Ilario - Via Somma (Nervi Croce Verde)",,3
+517-179,517,"Oberdan (Nervi)-Cim.NerviSomma-Oberdan (Nervi)",,3
+518-160,518,"Linea interna Ospedale S.Martino",,3
+518-179,518,"Linea interna Ospedale S.Martino",,3
+584-179,584,"P.za S.Giorgio di Bavari-Via V Maggio (H Gaslini)",,3
+603-179,603,"Quezzi(P.za S.Maria)-C.so Sardegna-Staz.Brignole",,3
+604-179,604,"Via Berghini (Camaldoli) - Pianderlino -  Brignole",,3
+606-179,606,"V De Gaspari (Boccadasse) -Tommaseo-Manin-Principe",,3
+607-179,607,"Quinto (Gianelli)-Albaro-DeFerrari-Brignole Fs",,3
+617-179,17,"Nervi(Commercio)-C.so Europa-Dante-Brignole",,3
+618-179,618,"P.S. S.Martino-Terralba-Brignole-Degola",,3
+634-179,634,"P.le Resasco (Staglieno)-Manin-L.go Zecca-Principe",,3
+635-179,635,"Via Vannucci-H Galliera-L.goS.F. Paola-Caricamento",,3
+640-179,640,"Brignole -Nunziata - Vesuvio -Via Costanzi (Righi)",,3
+641-179,641,"Osp.Gaslini-V.Orsini-Albaro-De Ferrari-Principe",,3
+649-179,649,"Via Ginestre - C.so Montegrappa - Staz.Brignole",,3
+653-179,653,"Travi-Consigliere-P.zza Baracca-Rivarolo",,3
+656-179,656,"V.Fea-V.Fereggiano-P.zza Giusti-Staz.Brignole",,3
+660-179,660,"Via Milano - Cim.Castagna - Degola (Samp)",,3
+663-179,663,"Degola (Samp) - Coronata - Pontedecimo",,3
+670-179,670,"Via Brin (Rivarolo)- Begato- V Reta (Bolzaneto)",,3
+680-179,680,"S.Eusebio-Valtrebbia-C.so De Stefanis-Verdi",,3
+683-179,683,"Brignole - Via Robino - Fereggiano - Biga",,3
+685-179,685,"P.za S.Giorgio di Bavari - Borgoratti - Via Dante",,3
+686-179,686,"P.za Grosso (S.Desiderio) - Borgoratti - Via Dante",,3
+687-179,687,"P.za Don Canepa (Apparizione)-Borgoratti-V Dante",,3
+697-179,697,"Via Verita- Crevari- Fabbriche- Fiorino-Montanella",,3
+699-179,699,"Voltri-Calamandrei-Salvemini-Novella-2 Dicembre",,3
+AIR-179,AIR,"Via Cibrario (Passerella FS) - Aeroporto Arrivi",,3
+ANG-169,ANG,"Via Dino Col - via Mura degli Angeli",,
+ANN-169,ANN,"Funicolare Sant'Anna",,
+BRI-169,BRI,"Ascensore Via Bari",,
+CAL-169,CAL,"P.za Portello - Spianata Castelletto",,
+CAP-169,CAP,"Galleria Garibaldi - Spianata Castelletto",,
+CRO-169,CRO,"C.so Magenta - Via Crocco",,
+CS-179,CS,"Ingresso Cimitero - Cimitero - Campo delle Rose",,3
+DRB-179,DRB,"Servizio Drin Bus",,3
+FGC-164,FGC,"Manin - Casella",,2
+FGR-169,FGR,"Cremagliera Principe-Granarolo",,7
+FRI-169,FRI,"Funicolare Zecca-Righi",,7
+GA-179,GA,"Sestri (Biancheri) - Santuario del Gazzo",,3
+HS-179,HS,"Linea sostitutiva ascensore Villa SCASSI",,3
+I01-160,I01,"Pra FS-Via della Torrazza-Via Villini Negrone",,3
+I02-160,I02,"Via Calda - Via Travi",,3
+I03-160,I03,"Via Canepari - Via Piombelli",,3
+I04-160,I04,"Via Brin - Via Mansueto",,3
+I06-160,I06,"P.za Masnata - Via del Campasso - Via Spaventa",,3
+I09-160,I09,"Via Linneo - Via Ravel - Via Fermi",,3
+I10-160,I10,"Via Buozzi - Via Pagano Doria - Via Ceppi",,3
+I13-160,I13,"Resasco - Via Gavette - Gava",,3
+I14-160,I14,"P.le Resasco - Sal. Sant'Antonino",,3
+I15-179,I15,"Doria - Bavari - S. Eusebio",,3
+I17-160,I17,"Via Borgoratti - Via Sapeto - Via Minoretti",,3
+I19-160,I19,"Via Borgoratti - Via Copernico",,3
+I21-160,I21,"Via De Vincenzi-V. Spalato-V. Merello-V. Olivo",,3
+I22-160,I22,"L.go Merlo - Via Edera - Via Poligono di Quezzi",,3
+I24-160,I24,"Marina Aeroporto - Sestri Fs - Marina Aeroporto",,3
+I25-160,I25,"P.za Garrassini - Via Monterosa",,3
+I27-160,I27,"Doria - S. Siro Struppa - Aggio",,3
+MGA-169,MGA,"Via Arsenale di Terra - Via Montegalletto",,
+MM-91,MM,"Brin - De Ferrari - Brignole",,1
+MON-169,MON,"Ascensore Ponte Monumentale",,
+MOT-169,MOT,"Via Ponterotto - Via Montello",,
+N1-179,n1,"Pian Martello(Prato)-De Ferrari-V. Gallino(PonteX)",,3
+N2-179,n2,"Nervi(Commercio)-De Ferrari-V.Camozzini(Voltri)",,3
+NAL-160,NAL,"Via del Lagaccio - Via Napoli",,3
+NIN-169,NIN,"C.so Armellini - via Contardo",,
+NVB-84,NVB,"Porto Antico - Pegli (Molo Archetti)",,4
+QZI-169,QZI,"Via Pinetti - via Portazza - P.za S.M. di Quezzi",,
+SES-169,SES,"Ascensori Sestri FS",,
+SFS-179,SFS,"Linee fuori servizio per cambi e soste",,3
+T05-160,T05,"P.za Pallavicini - Via dei Rebucchi",,3
+T07-160,T07,"Via Brin - Viale Buonarroti",,3
+T12-160,T12,"P.za Verdi-Via Peschiera-Via Palestro-Via Caffaro",,3
+T15-160,T15,"Sant'Eusebio - Costa di Sant'Eusebio",,3
+T16-160,T16,"Piazza Grosso - Premanico",,3
+T165-160,165,"P.za Montano (S.P.d'Arena) - Via Fanti - Montano",,3
+T18-160,T18,"P.za Don Canepa - V. Monte Fasce - V. Lanfranco",,3
+T23-160,T23,"Mura Angeli - Granarolo - Belvedere",,3
+T28-160,T28,"Nervi - San Rocco",,3
+T31-160,T31,"Voltri - Brusinetti - Sambuco",,3
+T32-160,T32,"Via Monte Sei Busi - Teglia",,3
+T374-160,T374,"Spianata Castelletto - Via Cancelliere",,3
+T375-160,T375,"Spianata Castelletto - Via Chiodo",,3
+T377-160,T377,"Spianata Castelletto - Via Ausonia",,3
+T385-160,T385,"Via G. Torti (S. Fruttuoso) - Via Imperiale",,3
+T516-160,516,"Via S.Ilario - Via Somma (Nervi Croce Verde)",,3
+T89-160,T89,"Via Giovanni XXIII - P.za Martinez (S.Fruttuoso)",,3
+VLB-160,VLB,"Staz.Brignole - Aeroporto",,3
