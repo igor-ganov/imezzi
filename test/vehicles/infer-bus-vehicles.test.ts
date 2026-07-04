@@ -153,6 +153,32 @@ describe('inferBusVehicles', () => {
     ]);
   });
 
+  test('positions advance as wall-clock time melts the countdown', () => {
+    const at = (nowSeconds: number) =>
+      inferBusVehicles(
+        context,
+        [{ stopId: 'B', row: row({ countdown: "2'" }) }],
+        nowSeconds,
+        1000,
+      );
+    const start = at(1000);
+    const later = at(1060);
+    const arrived = at(1150);
+    expect(start[0]?.lat).toBeCloseTo(44.0, 10);
+    expect(later[0]?.lat).toBeCloseTo(44.05, 10);
+    expect(arrived[0]?.lat).toBeCloseTo(44.1, 10);
+    expect(later[0]?.id).toBe(start[0]?.id ?? '');
+  });
+
+  test('without fetchedAt the position is the fetch-time one', () => {
+    const views = inferBusVehicles(
+      context,
+      [{ stopId: 'B', row: row({ countdown: "2'" }) }],
+      5000,
+    );
+    expect(views[0]?.lat).toBeCloseTo(44.0, 10);
+  });
+
   test('matches padded SIMON codes against the UI label', () => {
     const views = inferBusVehicles(
       context,

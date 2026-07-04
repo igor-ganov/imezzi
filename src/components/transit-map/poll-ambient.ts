@@ -5,9 +5,8 @@ import { loadStops } from '../../lib/data/load-stops.ts';
 import { romeClock } from '../../lib/schedule/rome-clock.ts';
 import { appState } from '../../lib/store/app-state.ts';
 import { discoverLines } from '../../lib/vehicles/discover-lines.ts';
-import { inferBusVehicles } from '../../lib/vehicles/infer-bus-vehicles.ts';
+import type { LiveSnapshot } from '../../lib/vehicles/live-snapshot.ts';
 import { normalizeLineLabel } from '../../lib/vehicles/normalize-line-label.ts';
-import type { VehicleView } from '../../lib/vehicles/types.ts';
 import { viewportStopIds } from '../../lib/vehicles/viewport-stop-ids.ts';
 import { fetchStopArrivals } from './fetch-stop-arrivals.ts';
 
@@ -18,15 +17,14 @@ const MIN_ZOOM = 12;
 /**
  * Ambient mode: with no line filter and no route, sweep the visible
  * monitored stops (rotating per cycle), discover which lines are out
- * there and infer their vehicles — the map is alive on first load
- * (live-map US-1).
+ * there and snapshot them — the map is alive on first load (US-1).
  */
 export const pollAmbient = async (
   cycle: number,
-): Promise<readonly VehicleView[]> => {
+): Promise<readonly LiveSnapshot[]> => {
   const viewport = appState.viewport.get();
   const active = viewport !== undefined && viewport.zoom >= MIN_ZOOM;
-  return branch(active)<Promise<readonly VehicleView[]>>(
+  return branch(active)<Promise<readonly LiveSnapshot[]>>(
     async () => {
       const stops = await loadStops();
       const ids = viewportStopIds(
@@ -43,10 +41,12 @@ export const pollAmbient = async (
           labels.includes(normalizeLineLabel(line.label)),
       );
       const contexts = await Promise.all(lines.map(busContextOf));
-      const now = romeClock(new Date()).seconds;
-      return contexts.flatMap((context) =>
-        inferBusVehicles(context, arrivals, now),
-      );
+      const fetchedAtSeconds = romeClock(new Date()).seconds;
+      return contexts.map((context) => ({
+        context,
+        arrivals,
+        fetchedAtSeconds,
+      }));
     },
     () => Promise.resolve([]),
   );

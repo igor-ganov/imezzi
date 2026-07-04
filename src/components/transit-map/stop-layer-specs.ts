@@ -2,7 +2,6 @@ import type {
   CircleLayerSpecification,
   ExpressionSpecification,
 } from 'maplibre-gl';
-import { modeColor } from '../../lib/map/mode-color.ts';
 
 const dimmed = (full: number): ExpressionSpecification => [
   'case',
@@ -11,7 +10,11 @@ const dimmed = (full: number): ExpressionSpecification => [
   full,
 ];
 
-/** Stop dot + its generously sized invisible hit target (AC-1.2). */
+/**
+ * Stop dot + its generously sized invisible hit target (AC-1.2).
+ * Stops are quiet, neutral background chrome: the moving vehicles
+ * are the loud layer — never the other way around.
+ */
 export const stopLayerSpecs = (
   theme: 'light' | 'dark',
 ): readonly CircleLayerSpecification[] => {
@@ -32,17 +35,20 @@ export const stopLayerSpecs = (
     source: 'stops',
     minzoom: 13,
     paint: {
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 13, 1.5, 17, 6],
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 13, 1, 17, 4.5],
       'circle-color': { light: '#ffffff', dark: '#1c2733' }[theme],
-      'circle-stroke-color': modeColor('bus', theme),
+      'circle-stroke-color': {
+        light: 'hsl(215 15% 62%)',
+        dark: 'hsl(215 15% 42%)',
+      }[theme],
       'circle-stroke-width': [
         'case',
         ['boolean', ['feature-state', 'active'], false],
         3,
-        1.5,
+        1.2,
       ],
-      'circle-opacity': dimmed(1),
-      'circle-stroke-opacity': dimmed(1),
+      'circle-opacity': dimmed(0.85),
+      'circle-stroke-opacity': dimmed(0.85),
     },
   };
   return [hit, dot];

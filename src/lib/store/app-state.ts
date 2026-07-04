@@ -2,7 +2,7 @@ import { signal } from './signal.ts';
 import type { CivicHit } from '../civic/civic-hit.ts';
 import type { PinTarget } from '../map/pin-target.ts';
 import type { Itinerary, Leg, Place } from '../route/types.ts';
-import type { VehicleView } from '../vehicles/types.ts';
+import type { LiveSnapshot } from '../vehicles/live-snapshot.ts';
 
 /**
  * Global UI state (live-map design §4). Islands subscribe to slices;
@@ -41,8 +41,8 @@ export const appState = {
       }
     | undefined
   >(undefined),
-  /** Live inferred bus positions from the poller (design §2). */
-  liveVehicles: signal<readonly VehicleView[]>([]),
+  /** Raw poll snapshots — positions recompute parametrically per tick. */
+  liveSnapshots: signal<readonly LiveSnapshot[]>([]),
   /** Epoch ms of the last successful live fetch (freshness banner). */
   lastLiveUpdate: signal<number>(0),
   /** Resolved theme. */

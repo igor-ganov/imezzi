@@ -58,7 +58,9 @@ export const makeMapController = (container: HTMLElement) => {
       syncStops();
       syncVehicles();
     });
-    globalThis.setInterval(syncVehicles, 1000);
+    // 500 ms tick: schedule vehicles and live snapshots are both
+    // parametric in wall-clock time, so each tick moves the fleet.
+    globalThis.setInterval(syncVehicles, 500);
     appState.itinerary.subscribe((itinerary) =>
       mark.routeLegs(itinerary?.legs.length ?? 0),
     );

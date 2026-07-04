@@ -14,11 +14,15 @@ const SEGMENT_SECONDS = 120;
  * Infer live bus positions from per-stop SIMON predictions: the same
  * NumeroSociale seen across a line's stops sits before its soonest
  * predicted stop, `countdown/120 s` of a segment away (design §2).
+ * `fetchedAtSeconds` parametrises the position over wall-clock time:
+ * the remaining countdown shrinks as seconds pass, so recomputing
+ * every tick animates the vehicle toward the stop between polls.
  */
 export const inferBusVehicles = (
   context: BusLineContext,
   arrivals: readonly StopArrival[],
   nowSeconds: number,
+  fetchedAtSeconds: number = nowSeconds,
 ): readonly VehicleView[] => {
   const mine = arrivals.filter(
     ({ row }) =>
@@ -35,7 +39,11 @@ export const inferBusVehicles = (
     const prev =
       context.stopCoords[direction?.stopIds[Math.max(index - 1, 0)] ?? ''] ??
       target;
-    const countdown = parseCountdown(best.row.countdown, nowSeconds);
+    const elapsed = Math.max(nowSeconds - fetchedAtSeconds, 0);
+    const countdown = Math.max(
+      parseCountdown(best.row.countdown, fetchedAtSeconds) - elapsed,
+      0,
+    );
     const fraction = 1 - Math.min(countdown / SEGMENT_SECONDS, 1);
     return [direction]
       .filter(() => direction !== undefined && index >= 0 && target !== undefined)

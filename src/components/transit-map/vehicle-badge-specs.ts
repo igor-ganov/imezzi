@@ -40,7 +40,7 @@ export const vehicleBadgeSpecs = (
     layout: {
       'text-field': ['get', 'label'],
       'text-font': ['Noto Sans Bold'],
-      'text-size': 10,
+      'text-size': ['interpolate', ['linear'], ['zoom'], 11, 10, 16, 13],
       'text-allow-overlap': true,
     },
     paint: {

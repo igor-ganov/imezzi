@@ -24,9 +24,9 @@ export const vehicleLayerSpecs = (
     type: 'circle',
     source: 'vehicles',
     paint: {
-      'circle-radius': 13,
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 12, 16, 18],
       'circle-color': byModeColor(theme),
-      'circle-opacity': unlessDimmed(0.22),
+      'circle-opacity': unlessDimmed(0.28),
       'circle-blur': 0.4,
     },
   };
@@ -35,10 +35,10 @@ export const vehicleLayerSpecs = (
     type: 'circle',
     source: 'vehicles',
     paint: {
-      'circle-radius': 9,
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 8, 16, 13],
       'circle-color': byModeColor(theme),
       'circle-stroke-color': CONTRAST[theme],
-      'circle-stroke-width': 2,
+      'circle-stroke-width': 2.5,
       'circle-opacity': unlessDimmed(1),
       'circle-stroke-opacity': unlessDimmed(1),
     },

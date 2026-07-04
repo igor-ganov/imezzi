@@ -17,6 +17,6 @@ export const wireStore = (
     hooks.syncSelection();
     hooks.syncVehicles();
   });
-  appState.liveVehicles.subscribe(hooks.syncVehicles);
+  appState.liveSnapshots.subscribe(hooks.syncVehicles);
   startLivePoller();
 };

@@ -2,24 +2,25 @@ import { busContextOf } from '../../lib/data/bus-context-of.ts';
 import type { UiLine } from '../../lib/lines/ui-line.ts';
 import { romeClock } from '../../lib/schedule/rome-clock.ts';
 import { sampleEvery } from '../../lib/sample-every.ts';
-import { inferBusVehicles } from '../../lib/vehicles/infer-bus-vehicles.ts';
-import type { VehicleView } from '../../lib/vehicles/types.ts';
+import type { LiveSnapshot } from '../../lib/vehicles/live-snapshot.ts';
 import { fetchStopArrivals } from './fetch-stop-arrivals.ts';
 
 const STOPS_PER_LINE = 12;
 
-/** Live vehicles for explicitly selected/itinerary bus lines. */
-export const pollTargeted = async (
+/** Poll snapshots for explicitly selected/itinerary bus lines. */
+export const pollTargeted = (
   lines: readonly UiLine[],
-): Promise<readonly VehicleView[]> => {
-  const perLine = await Promise.all(
-    lines.map(async (line) => {
+): Promise<readonly LiveSnapshot[]> =>
+  Promise.all(
+    lines.map(async (line): Promise<LiveSnapshot> => {
       const context = await busContextOf(line);
       const arrivals = await fetchStopArrivals(
         sampleEvery(context.monitoredStopIds, STOPS_PER_LINE),
       );
-      return inferBusVehicles(context, arrivals, romeClock(new Date()).seconds);
+      return {
+        context,
+        arrivals,
+        fetchedAtSeconds: romeClock(new Date()).seconds,
+      };
     }),
   );
-  return perLine.flat();
-};

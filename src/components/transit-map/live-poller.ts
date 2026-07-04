@@ -17,11 +17,11 @@ const run = async (cycle: number): Promise<void> => {
       (selected.has(line.key) ||
         routeLabels.has(normalizeLineLabel(line.label))),
   );
-  const views = await branch(targeted.length > 0)(
+  const snapshots = await branch(targeted.length > 0)(
     () => pollTargeted(targeted),
     () => pollAmbient(cycle),
   );
-  appState.liveVehicles.set(views);
+  appState.liveSnapshots.set(snapshots);
   appState.lastLiveUpdate.set(Date.now());
 };
 
@@ -49,7 +49,7 @@ export const startLivePoller = (): void => {
   appState.selectedLines.subscribe(poll);
   appState.itinerary.subscribe(poll);
   appState.viewport.subscribe(() =>
-    branch(appState.liveVehicles.get().length === 0)(poll, () => undefined),
+    branch(appState.liveSnapshots.get().length === 0)(poll, () => undefined),
   );
   globalThis.setInterval(poll, POLL_MS);
 };

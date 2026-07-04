@@ -2,6 +2,7 @@ import { itineraryLines } from '../../lib/route/itinerary-lines.ts';
 import { romeClock } from '../../lib/schedule/rome-clock.ts';
 import { scheduleVehicles } from '../../lib/schedule/schedule-vehicles.ts';
 import { appState } from '../../lib/store/app-state.ts';
+import { inferBusVehicles } from '../../lib/vehicles/infer-bus-vehicles.ts';
 import { normalizeLineLabel } from '../../lib/vehicles/normalize-line-label.ts';
 import type { VehicleView } from '../../lib/vehicles/types.ts';
 import type { MapData } from './map-data.ts';
@@ -14,6 +15,7 @@ import type { MapData } from './map-data.ts';
 export const vehiclesNow = (data: MapData): readonly VehicleView[] => {
   const selected = appState.selectedLines.get();
   const routeLines = itineraryLines(appState.itinerary.get());
+  const clock = romeClock(new Date());
   const dim = (vehicle: VehicleView): VehicleView => ({
     ...vehicle,
     dimmed:
@@ -21,9 +23,18 @@ export const vehiclesNow = (data: MapData): readonly VehicleView[] => {
       !routeLines.has(normalizeLineLabel(vehicle.label)),
   });
   return [
-    ...scheduleVehicles(data.schedule, romeClock(new Date())).filter(
+    ...scheduleVehicles(data.schedule, clock).filter(
       (vehicle) => selected.size === 0 || selected.has(vehicle.lineKey),
     ),
-    ...appState.liveVehicles.get(),
+    ...appState.liveSnapshots
+      .get()
+      .flatMap((snapshot) =>
+        inferBusVehicles(
+          snapshot.context,
+          snapshot.arrivals,
+          clock.seconds,
+          snapshot.fetchedAtSeconds,
+        ),
+      ),
   ].map(dim);
 };

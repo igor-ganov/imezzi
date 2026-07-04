@@ -22,10 +22,12 @@ export default defineConfig({
       args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
     },
   },
+  // Static bundle only: the suite intercepts every API/data call, so
+  // no worker runtime is involved (wrangler dev flakes under load).
   webServer: {
-    command: 'bunx wrangler dev --port 8791 --ip 127.0.0.1 --local',
+    command: 'bun scripts/serve-dist.ts 8791',
     url: 'http://127.0.0.1:8791',
     reuseExistingServer: !process.env['CI'],
-    timeout: 60000,
+    timeout: 30000,
   },
 });
