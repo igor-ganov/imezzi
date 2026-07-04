@@ -1,22 +1,25 @@
 import { groupBy } from '../group-by.ts';
-import { normalizeLineLabel } from '../vehicles/normalize-line-label.ts';
 import type { VehicleView } from '../vehicles/types.ts';
-import { effectiveCountdown } from './effective-countdown.ts';
-import { matchPath } from './match-path.ts';
-import { pickTemplate } from './pick-template.ts';
-import { positionOnDirection } from './position-on-direction.ts';
+import type { FleetMemory, FleetProgress } from './fleet-memory.ts';
+import { placeVehicle } from './place-vehicle.ts';
 import { soonestSighting } from './soonest-sighting.ts';
 import type { BusOffsets, FleetSighting } from './types.ts';
 
 type Path = readonly (readonly [number, number])[];
 type PathsOf = (label: string) => readonly Path[] | undefined;
 
+export interface FleetPlacementResult {
+  readonly views: readonly VehicleView[];
+  readonly memory: FleetMemory;
+}
+
 /**
- * The whole live fleet: EVERY unique NumeroSociale across all
- * sightings yields exactly one marker (the count invariant the UI
- * exposes as data-fleet-computed / data-live-rendered). Placement is
- * between the two adjacent stops bracketing the melted countdown;
- * with no usable template the vehicle sits at its sighting stop.
+ * The whole live fleet: EVERY unique NumeroSociale yields exactly
+ * one marker (the count invariant). Direction is STICKY per vehicle
+ * (SIMON headsigns rarely match GTFS termini verbatim, so a vehicle
+ * keeps its direction while it still serves the sighted stop), and
+ * progress along a direction is MONOTONIC via the returned memory —
+ * vehicles never glide backward on prediction noise.
  */
 export const inferFleet = (
   sightings: readonly FleetSighting[],
@@ -24,44 +27,27 @@ export const inferFleet = (
   coords: ReadonlyMap<string, readonly [number, number]>,
   nowSeconds: number,
   pathsOf: PathsOf = () => undefined,
-): readonly VehicleView[] => {
+  memory: FleetMemory = new Map(),
+): FleetPlacementResult => {
   const live = sightings.filter(
     ({ row }) => !row.theoretical && row.vehicle !== '',
   );
-  return Array.from(groupBy(live, ({ row }) => row.vehicle).values()).map(
-    (group) => {
-      const best = soonestSighting(group, nowSeconds);
-      const label = normalizeLineLabel(best.row.line);
-      const template = pickTemplate(
-        offsets[label] ?? [],
-        best.stopId,
-        best.row.destination,
-      );
-      const placed = [template]
-        .filter(
-          (entry): entry is NonNullable<typeof entry> => entry !== undefined,
-        )
-        .map((entry) =>
-          positionOnDirection(
-            entry,
-            coords,
-            best.stopId,
-            effectiveCountdown(best, nowSeconds),
-            matchPath(pathsOf(label) ?? [], entry, coords),
-          ),
-        )[0];
-      const anchor = coords.get(best.stopId) ?? [0, 0];
-      return {
-        id: `bus:${best.row.vehicle}`,
-        label,
-        mode: 'bus',
-        lineKey: label,
-        lon: placed?.point[0] ?? anchor[0],
-        lat: placed?.point[1] ?? anchor[1],
-        approximated: false,
-        bearing: placed?.bearing,
-        ageSeconds: Math.max(nowSeconds - best.fetchedAtSeconds, 0),
-      };
-    },
-  );
+  const nextMemory = new Map<string, FleetProgress>();
+  const views = Array.from(
+    groupBy(live, ({ row }) => row.vehicle).values(),
+  ).map((group) => {
+    const best = soonestSighting(group, nowSeconds);
+    const id = `bus:${best.row.vehicle}`;
+    const { view, progress } = placeVehicle(
+      best,
+      offsets,
+      coords,
+      nowSeconds,
+      pathsOf,
+      memory.get(id),
+    );
+    nextMemory.set(id, progress);
+    return view;
+  });
+  return { views, memory: nextMemory };
 };

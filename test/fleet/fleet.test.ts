@@ -4,8 +4,10 @@ import { effectiveCountdown } from '../../src/lib/fleet/effective-countdown.ts';
 import { fleetPlan } from '../../src/lib/fleet/fleet-plan.ts';
 import { inferFleet } from '../../src/lib/fleet/infer-fleet.ts';
 import { mergeSightings } from '../../src/lib/fleet/merge-sightings.ts';
+import { advanceProgress } from '../../src/lib/fleet/fleet-memory.ts';
+import { momentOf } from '../../src/lib/fleet/moment-of.ts';
 import { pickTemplate } from '../../src/lib/fleet/pick-template.ts';
-import { positionOnDirection } from '../../src/lib/fleet/position-on-direction.ts';
+import { placeAtMoment } from '../../src/lib/fleet/place-at-moment.ts';
 import type { BusOffsets, FleetSighting } from '../../src/lib/fleet/types.ts';
 import { uniqueFleetCount } from '../../src/lib/fleet/unique-fleet-count.ts';
 import { bearingOf } from '../../src/lib/geo/bearing-of.ts';
@@ -73,26 +75,47 @@ const coords = new Map<string, readonly [number, number]>([
   ['C', [8.9, 44.2]],
 ]);
 
-describe('positionOnDirection', () => {
+describe('momentOf + placeAtMoment', () => {
   test('places between the two stops bracketing the moment', () => {
-    const placed = positionOnDirection(template, coords, 'C', 120);
-    // arrival at C = 300, moment = 180 → between B (120) and C (300)
+    const moment = momentOf(template, 'C', 120) ?? -1;
+    expect(moment).toBe(180);
+    const placed = placeAtMoment(template, coords, moment);
     expect(placed?.point[1]).toBeCloseTo(44.1 + (60 / 180) * 0.1, 5);
     expect(placed?.bearing).toBeCloseTo(0);
   });
 
   test('zero countdown puts the vehicle at its stop', () => {
-    const placed = positionOnDirection(template, coords, 'B', 0);
+    const placed = placeAtMoment(template, coords, momentOf(template, 'B', 0) ?? -1);
     expect(placed?.point[1]).toBeCloseTo(44.1, 5);
   });
 
   test('countdown beyond route start clamps to the first stop', () => {
-    const placed = positionOnDirection(template, coords, 'B', 999);
+    const placed = placeAtMoment(template, coords, momentOf(template, 'B', 999) ?? -1);
     expect(placed?.point[1]).toBeCloseTo(44.0, 5);
   });
 
-  test('unknown stop id yields undefined', () => {
-    expect(positionOnDirection(template, coords, 'Z', 60)).toBeUndefined();
+  test('unknown stop id yields no moment', () => {
+    expect(momentOf(template, 'Z', 60)).toBeUndefined();
+  });
+});
+
+describe('advanceProgress', () => {
+  test('small regressions hold, advances pass through', () => {
+    const held = advanceProgress({ templateKey: '1#0', moment: 180 }, '1#0', 60, 1200);
+    expect(held).toBe(180);
+    expect(advanceProgress({ templateKey: '1#0', moment: 180 }, '1#0', 200, 1200)).toBe(200);
+  });
+
+  test('a direction change resets progress', () => {
+    expect(advanceProgress({ templateKey: '1#0', moment: 180 }, '1#1', 30, 1200)).toBe(30);
+  });
+
+  test('a new-trip-sized regression resets progress', () => {
+    expect(advanceProgress({ templateKey: '1#0', moment: 900 }, '1#0', 10, 1200)).toBe(10);
+  });
+
+  test('no history means the raw moment', () => {
+    expect(advanceProgress(undefined, '1#0', 42, 1200)).toBe(42);
   });
 });
 
@@ -145,14 +168,14 @@ describe('inferFleet — the count invariant', () => {
       sighting('C', { vehicle: '09002', countdown: "1'" }),
       sighting('A', { vehicle: '09003', line: '999', destination: 'BOH' }),
     ];
-    const views = inferFleet(sightings, offsets, coords, 1000);
+    const { views } = inferFleet(sightings, offsets, coords, 1000);
     expect(views.length).toBe(3);
     expect(views.length).toBe(uniqueFleetCount(sightings));
     expect(new Set(views.map((view) => view.id)).size).toBe(3);
   });
 
   test('vehicles without a usable template anchor at their stop', () => {
-    const views = inferFleet(
+    const { views } = inferFleet(
       [sighting('B', { vehicle: '09009', line: '999' })],
       offsets,
       coords,
@@ -168,20 +191,120 @@ describe('inferFleet — the count invariant', () => {
       sighting('B', { theoretical: true, vehicle: '09001' }),
       sighting('B', { vehicle: '' }),
     ];
-    expect(inferFleet(sightings, offsets, coords, 1000)).toEqual([]);
+    expect(inferFleet(sightings, offsets, coords, 1000).views).toEqual([]);
     expect(uniqueFleetCount(sightings)).toBe(0);
   });
 
   test('positions advance as the countdown melts', () => {
     const sightings = [sighting('C', { countdown: "3'" })];
-    const early = inferFleet(sightings, offsets, coords, 1000);
-    const later = inferFleet(sightings, offsets, coords, 1090);
+    const early = inferFleet(sightings, offsets, coords, 1000).views;
+    const later = inferFleet(sightings, offsets, coords, 1090).views;
     expect((later[0]?.lat ?? 0) > (early[0]?.lat ?? 1)).toBe(true);
   });
 
   test('bearing points along the travel direction', () => {
-    const views = inferFleet([sighting('C', { countdown: "2'" })], offsets, coords, 1000);
+    const { views } = inferFleet([sighting('C', { countdown: "2'" })], offsets, coords, 1000);
     expect(views[0]?.bearing).toBeCloseTo(0);
+  });
+});
+
+describe('inferFleet — no backward motion (regression)', () => {
+  test('a re-poll with a GROWN countdown must not slide the bus back', () => {
+    // First poll: 2' to C → moment 180. Second poll (30 s later):
+    // traffic makes the prediction WORSE — 4' to C → raw moment 60,
+    // i.e. 120 s BEHIND. The bus must hold, never glide backward.
+    const first = inferFleet(
+      [sighting('C', { countdown: "2'" }, 1000)],
+      offsets,
+      coords,
+      1000,
+    );
+    const firstLat = first.views[0]?.lat ?? 0;
+    const second = inferFleet(
+      [sighting('C', { countdown: "4'" }, 1030)],
+      offsets,
+      coords,
+      1030,
+      () => undefined,
+      first.memory,
+    );
+    expect(second.views[0]?.lat ?? 0).toBeGreaterThanOrEqual(firstLat);
+  });
+
+  test('best-stop flapping between two sightings cannot regress', () => {
+    const first = inferFleet(
+      [
+        sighting('B', { countdown: "1'" }, 1000),
+        sighting('C', { countdown: "4'" }, 1000),
+      ],
+      offsets,
+      coords,
+      1000,
+    );
+    const firstLat = first.views[0]?.lat ?? 0;
+    // 70 s later B's row is gone (bus passed); C alone now implies a
+    // moment slightly before the held one — hold, don't move back.
+    const second = inferFleet(
+      [sighting('C', { countdown: "3'" }, 1070)],
+      offsets,
+      coords,
+      1070,
+      () => undefined,
+      first.memory,
+    );
+    expect(second.views[0]?.lat ?? 0).toBeGreaterThanOrEqual(firstLat);
+  });
+
+  test('a very large regression on the same line starts a new trip', () => {
+    const atTerminus = inferFleet(
+      [sighting('C', { countdown: "0'" }, 1000)],
+      offsets,
+      coords,
+      1000,
+    );
+    expect(atTerminus.views[0]?.lat).toBeCloseTo(44.2, 5);
+    const nextTrip = inferFleet(
+      [sighting('B', { countdown: "9'" }, 1900)],
+      offsets,
+      coords,
+      1900,
+      () => undefined,
+      atTerminus.memory,
+    );
+    // raw moment = 120 - 540 → clamped 0 → a 300 s regression from
+    // the terminus: accepted as the next departure, back at the start.
+    expect(nextTrip.views[0]?.lat).toBeCloseTo(44.0, 5);
+  });
+});
+
+describe('inferFleet — sticky direction (regression)', () => {
+  const reverse = {
+    stops: ['C', 'B', 'A'],
+    offsets: [0, 180, 300],
+    lastStopName: 'SUD',
+  };
+  const twoWay: BusOffsets = { '1': [template, reverse] };
+
+  test('a stop served by both directions keeps the assigned one', () => {
+    // Headsign matching neither terminus: the first tick assigns the
+    // fallback direction; a later tick at another shared stop must
+    // NOT flip the direction (random arrow flips came from this).
+    const first = inferFleet(
+      [sighting('B', { destination: 'BOH', countdown: "2'" }, 1000)],
+      twoWay,
+      coords,
+      1000,
+    );
+    const second = inferFleet(
+      [sighting('A', { destination: 'BOH', countdown: "1'" }, 1060)],
+      twoWay,
+      coords,
+      1060,
+      () => undefined,
+      first.memory,
+    );
+    expect(first.memory.get('bus:09001')?.templateKey).toBe('1#0');
+    expect(second.memory.get('bus:09001')?.templateKey).toBe('1#0');
   });
 });
 

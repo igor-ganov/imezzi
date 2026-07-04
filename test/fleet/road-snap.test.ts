@@ -1,8 +1,9 @@
 import { describe, expect, test } from 'bun:test';
 import { matchPath } from '../../src/lib/fleet/match-path.ts';
-import { pointAlongPath } from '../../src/lib/fleet/point-along-path.ts';
-import { positionOnDirection } from '../../src/lib/fleet/position-on-direction.ts';
-import { nearestPathIndex } from '../../src/lib/geo/nearest-path-index.ts';
+import { placeAtMoment } from '../../src/lib/fleet/place-at-moment.ts';
+import { roadOf } from '../../src/lib/fleet/road-of.ts';
+import { bearingAt } from '../../src/lib/geo/bearing-at.ts';
+import { projectStops } from '../../src/lib/geo/project-stops.ts';
 
 const template = {
   stops: ['A', 'B', 'C'],
@@ -15,67 +16,125 @@ const coords = new Map<string, readonly [number, number]>([
   ['C', [8.9, 44.2]],
 ]);
 
-// A road that detours east between B and C — straight-line
-// interpolation would fly over the block, the path must not.
-const road: readonly (readonly [number, number])[] = [
+// Outbound leg going north, then the route doubles back south along
+// a parallel street 30 m east — the classic wrong-pass trap.
+const doubleBack: readonly (readonly [number, number])[] = [
   [8.9, 44.0],
-  [8.9, 44.05],
   [8.9, 44.1],
-  [8.95, 44.12],
-  [8.95, 44.17],
   [8.9, 44.2],
+  [8.9003, 44.2],
+  [8.9003, 44.1],
+  [8.9003, 44.0],
 ];
 
-describe('nearestPathIndex', () => {
-  test('projects a coordinate onto its closest path point', () => {
-    expect(nearestPathIndex(road, [8.9, 44.1])).toBe(2);
-    expect(nearestPathIndex(road, [8.94, 44.16])).toBe(4);
-    expect(nearestPathIndex([], [8.9, 44.1])).toBe(0);
+describe('projectStops — the wrong-pass regression', () => {
+  test('projections are monotonic even when the return pass is nearer', () => {
+    // Stop B sits marginally nearer the RETURN pass point (index 4)
+    // than the outbound one? Equal here — monotonic search must pick
+    // the outbound pass (index 1), never jump to 4.
+    const indices = projectStops(doubleBack, [
+      [8.9, 44.0],
+      [8.9001, 44.1],
+      [8.9, 44.2],
+    ]);
+    expect(indices).toEqual([0, 1, 2]);
+  });
+
+  test('each projection never precedes the previous one', () => {
+    const indices = projectStops(doubleBack, [
+      [8.9003, 44.0],
+      [8.9, 44.05],
+      [8.9003, 44.05],
+    ]);
+    const sorted = [...indices].sort((a, b) => a - b);
+    expect(indices).toEqual(sorted);
+  });
+
+  test('missing stop coordinates inherit the previous index', () => {
+    expect(projectStops(doubleBack, [[8.9, 44.1], undefined])).toEqual([1, 1]);
   });
 });
 
-describe('matchPath', () => {
-  test('picks the candidate ending nearest the terminus', () => {
-    const reversed = [...road].reverse();
-    expect(matchPath([reversed], template, coords)?.[0]).toEqual([8.9, 44.0]);
-    expect(matchPath([road], template, coords)).toBe(road);
+describe('bearingAt — arrow stability', () => {
+  const withDuplicates: readonly (readonly [number, number])[] = [
+    [8.9, 44.0],
+    [8.9, 44.1],
+    [8.9, 44.1],
+    [8.91, 44.1],
+  ];
+
+  test('duplicate vertices do not spin the arrow north', () => {
+    // At index 1 the next distinct vertex is [8.91, 44.1] → east.
+    expect(bearingAt(withDuplicates, 1)).toBeCloseTo(90, 0);
   });
 
-  test('no usable candidates yields undefined', () => {
-    expect(matchPath([], template, coords)).toBeUndefined();
-    expect(matchPath([[[8.9, 44]]], template, coords)).toBeUndefined();
-  });
-});
-
-describe('pointAlongPath', () => {
-  test('midway between B and C sits on the detour, not the chord', () => {
-    const placed = pointAlongPath(road, [8.9, 44.1], [8.9, 44.2], 0.5);
-    expect(placed.point[0]).toBeCloseTo(8.95, 5);
-    expect(placed.point).not.toEqual([8.9, 44.15]);
+  test('at the path end the last real segment bearing is kept', () => {
+    expect(bearingAt(withDuplicates, 3)).toBeCloseTo(90, 0);
   });
 
-  test('bearing follows the local road segment', () => {
-    const start = pointAlongPath(road, [8.9, 44.1], [8.9, 44.2], 0);
-    // at B the road heads north-east toward the detour
-    expect(start.bearing).toBeGreaterThan(0);
-    expect(start.bearing).toBeLessThan(90);
-  });
-
-  test('fraction 1 lands on the target stop projection', () => {
-    const placed = pointAlongPath(road, [8.9, 44.1], [8.9, 44.2], 1);
-    expect(placed.point).toEqual([8.9, 44.2]);
+  test('bearing always follows increasing indices (travel order)', () => {
+    // Northbound outbound pass of the double-back: must be 0°, and
+    // NEVER 180° even though the return pass runs south nearby.
+    expect(bearingAt(doubleBack, 0)).toBeCloseTo(0, 0);
+    expect(bearingAt(doubleBack, 1)).toBeCloseTo(0, 0);
+    // On the return pass, travel order points south.
+    expect(bearingAt(doubleBack, 4)).toBeCloseTo(180, 0);
   });
 });
 
-describe('positionOnDirection with a road', () => {
-  test('snaps to the polyline when one is provided', () => {
-    const placed = positionOnDirection(template, coords, 'C', 90, road);
-    // moment 210 of 300 → between B (120) and C (300), on the detour
-    expect(placed?.point[0]).toBeCloseTo(8.95, 5);
+describe('matchPath — orientation by both endpoints', () => {
+  test('a loop with близкими ends is oriented by the first stop too', () => {
+    // Loop: starts at A, ends 20 m from A. Terminus-only scoring
+    // cannot tell the orientations apart; the first stop can.
+    const loop: readonly (readonly [number, number])[] = [
+      [8.9, 44.0],
+      [8.9, 44.1],
+      [8.91, 44.1],
+      [8.9002, 44.0],
+    ];
+    const loopTemplate = {
+      stops: ['A', 'B'],
+      offsets: [0, 120],
+      lastStopName: 'LOOP END',
+    };
+    const loopCoords = new Map<string, readonly [number, number]>([
+      ['A', [8.9, 44.0]],
+      ['B', [8.9, 44.1]],
+    ]);
+    const oriented = matchPath([loop], loopTemplate, loopCoords);
+    expect(oriented?.[0]).toEqual([8.9, 44.0]);
+    expect(oriented?.[1]).toEqual([8.9, 44.1]);
   });
 
-  test('falls back to the straight segment without a path', () => {
-    const placed = positionOnDirection(template, coords, 'C', 90);
-    expect(placed?.point[0]).toBeCloseTo(8.9, 5);
+  test('a reversed candidate is flipped back', () => {
+    const reversed = [...doubleBack].reverse();
+    const oriented = matchPath([reversed], template, coords);
+    expect(oriented?.[0]).toEqual([8.9003, 44.0]);
+  });
+});
+
+describe('placeAtMoment', () => {
+  const road = roadOf(template, [doubleBack], coords);
+
+  test('walks the outbound pass between B and C', () => {
+    const placed = placeAtMoment(template, coords, 210, road);
+    expect(placed?.point[0]).toBeCloseTo(8.9, 4);
+    expect(placed?.point[1]).toBeGreaterThan(44.1);
+    expect(placed?.point[1]).toBeLessThanOrEqual(44.2);
+  });
+
+  test('bearing on the outbound pass is northbound, never flipped', () => {
+    const placed = placeAtMoment(template, coords, 210, road);
+    expect(placed?.bearing).toBeCloseTo(0, 0);
+  });
+
+  test('moment beyond the last offset clamps to the terminus', () => {
+    const placed = placeAtMoment(template, coords, 9999, road);
+    expect(placed?.point[1]).toBeCloseTo(44.2, 4);
+  });
+
+  test('falls back to the straight chord without a road', () => {
+    const placed = placeAtMoment(template, coords, 210);
+    expect(placed?.point[1]).toBeCloseTo(44.15, 5);
   });
 });

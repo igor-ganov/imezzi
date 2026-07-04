@@ -1,5 +1,6 @@
 import { bearingOf } from '../geo/bearing-of.ts';
-import { pointAlongPath } from './point-along-path.ts';
+import { placeOnRoad } from './place-on-road.ts';
+import type { Road } from './road-of.ts';
 import type { BusDirectionTemplate } from './types.ts';
 
 export interface Placement {
@@ -10,40 +11,34 @@ export interface Placement {
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
 /**
- * Place a vehicle on its direction's timeline: `countdown` seconds
- * before arriving at `stopId`, i.e. between the two adjacent stops
- * whose travel-time offsets bracket that moment. With a road
- * polyline the point snaps to the street; otherwise it interpolates
- * the straight segment (live-map US-1).
+ * Place a vehicle at a moment on its direction's timeline: between
+ * the two adjacent stops whose offsets bracket it. On a road the
+ * point walks the polyline between the stops' monotonic projections;
+ * without one it interpolates the straight chord.
  */
-export const positionOnDirection = (
+export const placeAtMoment = (
   template: BusDirectionTemplate,
   coords: ReadonlyMap<string, readonly [number, number]>,
-  stopId: string,
-  countdown: number,
-  path?: readonly (readonly [number, number])[],
+  moment: number,
+  road?: Road,
 ): Placement | undefined => {
-  const index = template.stops.indexOf(stopId);
-  const arrival = template.offsets[index] ?? 0;
-  const moment = Math.max(arrival - countdown, 0);
-  const segment = template.offsets.findIndex(
+  const last = template.offsets[template.offsets.length - 1] ?? 0;
+  const clamped = Math.min(Math.max(moment, 0), last);
+  const found = template.offsets.findIndex(
     (offset, i) =>
-      moment >= offset && moment <= (template.offsets[i + 1] ?? -1),
+      clamped >= offset && clamped <= (template.offsets[i + 1] ?? -1),
   );
-  const at = Math.max(segment, 0);
+  const at = Math.max(found, 0);
   const from = coords.get(template.stops[at] ?? '');
   const to = coords.get(template.stops[at + 1] ?? template.stops[at] ?? '');
   const start = template.offsets[at] ?? 0;
   const end = template.offsets[at + 1] ?? start + 1;
   const fraction = Math.min(
-    Math.max((moment - start) / Math.max(end - start, 1), 0),
+    Math.max((clamped - start) / Math.max(end - start, 1), 0),
     1,
   );
-  const usable = index >= 0 && from !== undefined && to !== undefined;
-  const onRoad = usable && (path?.length ?? 0) > 1;
   const strategies: Readonly<Record<string, () => Placement | undefined>> = {
-    road: () =>
-      pointAlongPath(path ?? [], from ?? [0, 0], to ?? [0, 0], fraction),
+    road: () => placeOnRoad(road ?? { path: [], indices: [] }, at, fraction, from ?? [0, 0]),
     straight: () => ({
       point: [
         lerp(from?.[0] ?? 0, to?.[0] ?? 0, fraction),
@@ -53,6 +48,8 @@ export const positionOnDirection = (
     }),
     none: () => undefined,
   };
+  const usable = from !== undefined && to !== undefined;
+  const onRoad = usable && (road?.path.length ?? 0) > 1;
   const key =
     { true: 'road', false: { true: 'straight', false: 'none' }[`${usable}`] }[
       `${onRoad}`

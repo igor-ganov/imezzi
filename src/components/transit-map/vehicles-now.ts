@@ -1,4 +1,5 @@
 import { fleetPaths } from '../../lib/data/fleet-paths.ts';
+import type { FleetMemory } from '../../lib/fleet/fleet-memory.ts';
 import { inferFleet } from '../../lib/fleet/infer-fleet.ts';
 import { itineraryLines } from '../../lib/route/itinerary-lines.ts';
 import { romeClock } from '../../lib/schedule/rome-clock.ts';
@@ -7,6 +8,9 @@ import { appState } from '../../lib/store/app-state.ts';
 import { normalizeLineLabel } from '../../lib/vehicles/normalize-line-label.ts';
 import type { VehicleView } from '../../lib/vehicles/types.ts';
 import type { MapData } from './map-data.ts';
+
+/** Cross-tick continuity for sticky directions / monotonic progress. */
+const memory = { current: new Map() as FleetMemory };
 
 /**
  * Vehicles to draw this tick: the full live fleet (inferred from the
@@ -24,18 +28,21 @@ export const vehiclesNow = (data: MapData): readonly VehicleView[] => {
       routeLabels.size > 0 &&
       !routeLabels.has(normalizeLineLabel(vehicle.label)),
   });
+  const fleet = inferFleet(
+    appState.fleetSightings.get(),
+    data.busOffsets,
+    data.stopCoords,
+    clock.seconds,
+    fleetPaths.get,
+    memory.current,
+  );
+  memory.current = fleet.memory;
   return [
     ...scheduleVehicles(data.schedule, clock).filter(
       (vehicle) =>
         selectedKeys.size === 0 || selectedKeys.has(vehicle.lineKey),
     ),
-    ...inferFleet(
-      appState.fleetSightings.get(),
-      data.busOffsets,
-      data.stopCoords,
-      clock.seconds,
-      fleetPaths.get,
-    ).filter(
+    ...fleet.views.filter(
       (vehicle) =>
         selectedLabels.size === 0 || selectedLabels.has(vehicle.label),
     ),
