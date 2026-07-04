@@ -3,10 +3,10 @@ import { loadLines } from '../../lib/data/load-lines.ts';
 import { itineraryLines } from '../../lib/route/itinerary-lines.ts';
 import { appState } from '../../lib/store/app-state.ts';
 import { normalizeLineLabel } from '../../lib/vehicles/normalize-line-label.ts';
-import { pollAmbient } from './poll-ambient.ts';
+import { accumulateAmbient } from './accumulate-ambient.ts';
 import { pollTargeted } from './poll-targeted.ts';
 
-const POLL_MS = 20000;
+const POLL_MS = 15000;
 
 const run = async (cycle: number): Promise<void> => {
   const selected = appState.selectedLines.get();
@@ -17,11 +17,12 @@ const run = async (cycle: number): Promise<void> => {
       (selected.has(line.key) ||
         routeLabels.has(normalizeLineLabel(line.label))),
   );
-  const snapshots = await branch(targeted.length > 0)(
-    () => pollTargeted(targeted),
-    () => pollAmbient(cycle),
+  await branch(targeted.length > 0)<Promise<void>>(
+    async () => {
+      appState.liveSnapshots.set(await pollTargeted(targeted));
+    },
+    () => accumulateAmbient(cycle),
   );
-  appState.liveSnapshots.set(snapshots);
   appState.lastLiveUpdate.set(Date.now());
 };
 

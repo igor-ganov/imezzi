@@ -11,3 +11,18 @@ export interface LiveSnapshot {
   readonly arrivals: readonly StopArrival[];
   readonly fetchedAtSeconds: number;
 }
+
+/**
+ * Keep snapshots young enough to trust (ambient cycles accumulate:
+ * lines discovered two sweeps ago must not vanish from the map).
+ * Day-seconds wrap at midnight is handled by modular distance.
+ */
+export const pruneSnapshots = (
+  snapshots: readonly LiveSnapshot[],
+  nowSeconds: number,
+  ttlSeconds: number,
+): readonly LiveSnapshot[] =>
+  snapshots.filter(
+    (snapshot) =>
+      (nowSeconds - snapshot.fetchedAtSeconds + 86400) % 86400 <= ttlSeconds,
+  );

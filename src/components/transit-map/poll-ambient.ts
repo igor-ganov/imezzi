@@ -10,8 +10,8 @@ import { normalizeLineLabel } from '../../lib/vehicles/normalize-line-label.ts';
 import { viewportStopIds } from '../../lib/vehicles/viewport-stop-ids.ts';
 import { fetchStopArrivals } from './fetch-stop-arrivals.ts';
 
-const STOPS_PER_CYCLE = 12;
-const LINES_PER_CYCLE = 8;
+const STOPS_PER_CYCLE = 20;
+const LINES_PER_CYCLE = 12;
 const MIN_ZOOM = 12;
 
 /**

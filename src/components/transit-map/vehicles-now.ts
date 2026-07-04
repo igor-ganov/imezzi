@@ -2,6 +2,7 @@ import { itineraryLines } from '../../lib/route/itinerary-lines.ts';
 import { romeClock } from '../../lib/schedule/rome-clock.ts';
 import { scheduleVehicles } from '../../lib/schedule/schedule-vehicles.ts';
 import { appState } from '../../lib/store/app-state.ts';
+import { dedupeVehicles } from '../../lib/vehicles/dedupe-vehicles.ts';
 import { inferBusVehicles } from '../../lib/vehicles/infer-bus-vehicles.ts';
 import { normalizeLineLabel } from '../../lib/vehicles/normalize-line-label.ts';
 import type { VehicleView } from '../../lib/vehicles/types.ts';
@@ -26,15 +27,19 @@ export const vehiclesNow = (data: MapData): readonly VehicleView[] => {
     ...scheduleVehicles(data.schedule, clock).filter(
       (vehicle) => selected.size === 0 || selected.has(vehicle.lineKey),
     ),
-    ...appState.liveSnapshots
-      .get()
-      .flatMap((snapshot) =>
-        inferBusVehicles(
-          snapshot.context,
-          snapshot.arrivals,
-          clock.seconds,
-          snapshot.fetchedAtSeconds,
+    // Snapshots are appended oldest-first, so deduping by vehicle id
+    // keeps the freshest sighting of each NumeroSociale.
+    ...dedupeVehicles(
+      appState.liveSnapshots
+        .get()
+        .flatMap((snapshot) =>
+          inferBusVehicles(
+            snapshot.context,
+            snapshot.arrivals,
+            clock.seconds,
+            snapshot.fetchedAtSeconds,
+          ),
         ),
-      ),
+    ),
   ].map(dim);
 };

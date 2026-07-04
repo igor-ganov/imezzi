@@ -3,7 +3,7 @@ import { fetchJson } from '../../lib/api/fetch-json.ts';
 import { poolMap } from '../../lib/pool-map.ts';
 import type { StopArrival } from '../../lib/vehicles/stop-arrival.ts';
 
-const PARALLEL = 5;
+const PARALLEL = 6;
 
 /** SIMON rows for a set of stops, tagged with their stop id. */
 export const fetchStopArrivals = async (
