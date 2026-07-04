@@ -9,6 +9,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "test": "bun test",
+    "data": "bun scripts/build-gtfs.ts",
     "lint": "eslint src test worker scripts",
     "typecheck": "astro check && tsc --noEmit -p tsconfig.test.json",
     "check": "bun run lint && bun run typecheck && bun test",

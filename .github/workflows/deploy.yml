@@ -1,0 +1,53 @@
+name: CI & Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least-privilege GITHUB_TOKEN — the deploy authenticates with the
+# Cloudflare Global API Key (cfk_ scannable format) via dedicated
+# secrets, which wrangler reads as CLOUDFLARE_EMAIL + CLOUDFLARE_API_KEY.
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Lint, typecheck, unit tests
+        run: bun run check
+
+  deploy:
+    needs: verify
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      # public/data is generated, not committed — rebuild the GTFS
+      # artifacts (lines.json, schedule.json) before the site build.
+      - name: Build GTFS artifacts
+        run: bun run data
+      - name: Build site
+        run: bun run build
+      - name: Deploy worker + assets
+        run: bunx wrangler deploy
+        env:
+          CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
+          CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Smoke-test production
+        run: |
+          code=$(curl -sS -o /dev/null -w '%{http_code}' https://imezzi.igor-ganov.workers.dev/)
+          test "$code" = "200"
+          curl -sS https://imezzi.igor-ganov.workers.dev/api/lines | head -c 100 | grep -q '"id"'

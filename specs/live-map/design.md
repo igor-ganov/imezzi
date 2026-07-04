@@ -11,7 +11,7 @@ Satisfies: live-map/requirements.md. Data facts verified 2026-07-04.
 | Line list, line→stop sequences | `app_lines.php`, `app_lines_stops.php` (CSV) | worker proxy |
 | Route polylines | `amt/readxml_linea.php?file=<LLL>_<1|2>.xml` (XML markers + points) | worker proxy |
 | Live arrivals per stop | `amt/servizi/passaggi_xml.php?CodiceFermata=<id>` — `<Previsione>` with `Linea`, `Destinazione`, `Teorica` (true = timetable, false = live SIMON prediction), `PrevisioneArrivo`, `NumeroSociale`, `AutobusPieno` | worker proxy, 15 s cache |
-| Train boards (Principe, Brignole, suburban) | ViaggiaTreno `partenze/arrivi/andamentoTreno` (unofficial) | worker proxy |
+| Train boards (Principe, Brignole, suburban) | ViaggiaTreno `partenze/arrivi/andamentoTreno` (unofficial). Caveat found in production: Akamai denies requests from Cloudflare egress IPs, so the proxy route works only best-effort; scheduled rail still flows through GTFS/Transitous | worker proxy |
 
 AMT hosts send no CORS headers → all AMT + ViaggiaTreno traffic goes
 through `worker/` routes under `/api/*` with XML/CSV→JSON transforms
