@@ -6,8 +6,27 @@ import Layout from '../layouts/Layout.astro';
   title="imezzi — live transit map of Genoa"
   description="Real-time AMT buses, metro, funiculars and trains on a live map of Genoa, with stop arrivals, red/black civic numbers and multimodal routing."
 >
-  <main>
-    <h1>imezzi</h1>
-    <p>Live transit map of Genoa — booting.</p>
-  </main>
+  <noscript>
+    <div class="noscript-panel">
+      <h1>imezzi</h1>
+      <p>
+        The live transit map of Genoa needs JavaScript to move buses,
+        metro and funiculars around. Enable it and reload.
+      </p>
+    </div>
+  </noscript>
+
+  <transit-map></transit-map>
+
+  <div class="chrome chrome-top-right">
+    <theme-toggle></theme-toggle>
+  </div>
 </Layout>
+
+<script>
+  import { bootState } from '../components/boot-state.ts';
+  import '../components/transit-map.ts';
+  import '../components/theme-toggle.ts';
+
+  bootState();
+</script>

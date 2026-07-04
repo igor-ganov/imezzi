@@ -117,6 +117,77 @@ body {
   }
 }
 
+/* App shell: full-viewport map with floating glass chrome (AC-1.1) */
+body {
+  overflow: hidden;
+}
+
+transit-map {
+  position: fixed;
+  inset: 0;
+  display: block;
+}
+
+transit-map .map-host {
+  position: absolute;
+  inset: 0;
+}
+
+.chrome {
+  position: fixed;
+  z-index: 20;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chrome-top-right {
+  top: 0.75rem;
+  right: 0.75rem;
+}
+
+.chrome-btn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  backdrop-filter: var(--glass);
+  -webkit-backdrop-filter: var(--glass);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform var(--speed) ease, box-shadow var(--speed) ease;
+}
+
+.chrome-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.chrome-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.chrome-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.noscript-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  padding: 2rem;
+  background: var(--bg);
+}
+
 /* Circular theme reveal (shared mechanic with previous sites) */
 @keyframes theme-reveal {
   from {
