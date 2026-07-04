@@ -7,6 +7,7 @@ import { resolveTheme } from '../lib/theme/resolve-theme.ts';
  */
 export const bootState = (): void => {
   const root = document.documentElement;
+  Object.assign(globalThis, { __imezzi: { appState } });
   appState.theme.set(resolveTheme(root.dataset['theme'] ?? 'light', false));
   matchMedia('(prefers-color-scheme: dark)').addEventListener(
     'change',

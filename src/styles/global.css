@@ -177,6 +177,140 @@ transit-map .map-host {
   height: 22px;
 }
 
+/* Bottom sheet (stop board, itinerary) — glass panel (AC-4.3) */
+.sheet {
+  position: fixed;
+  z-index: 30;
+  left: 50%;
+  bottom: 0.75rem;
+  transform: translateX(-50%);
+  width: min(560px, calc(100vw - 1.5rem));
+  max-height: 58dvh;
+  overflow: auto;
+  padding: 0.9rem 1rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  backdrop-filter: var(--glass);
+  -webkit-backdrop-filter: var(--glass);
+  box-shadow: var(--shadow-md);
+  animation: sheet-in var(--speed) ease-out;
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translate(-50%, 12px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.sheet-title {
+  margin: 0;
+  font-size: var(--step-1);
+  text-transform: capitalize;
+}
+
+.sheet-close {
+  width: 36px;
+  height: 36px;
+  flex: none;
+}
+
+.sheet-note {
+  margin: 0.4rem 0;
+  color: var(--ink-soft);
+  font-size: var(--step--1);
+}
+
+.board {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.board-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--surface-2) 60%, transparent);
+}
+
+.line-badge {
+  flex: none;
+  min-width: 2.4rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  text-align: center;
+  font-weight: 700;
+  font-size: var(--step--1);
+  color: hsl(var(--hue) 72% var(--mode-chip-l));
+  background: hsl(var(--hue) 55% var(--mode-chip-bg-l));
+}
+
+.board-destination {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+.board-eta {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.badge-live {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--live);
+  box-shadow: 0 0 6px var(--live);
+}
+
+.badge-approx {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--approx);
+  color: var(--surface);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: help;
+}
+
+.badge-full {
+  flex: none;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--danger);
+  color: var(--surface);
+  font-size: var(--step--1);
+  font-weight: 700;
+}
+
 .noscript-panel {
   position: fixed;
   inset: 0;

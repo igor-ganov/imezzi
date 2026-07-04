@@ -21,12 +21,15 @@ import Layout from '../layouts/Layout.astro';
   <div class="chrome chrome-top-right">
     <theme-toggle></theme-toggle>
   </div>
+
+  <stop-sheet></stop-sheet>
 </Layout>
 
 <script>
   import { bootState } from '../components/boot-state.ts';
   import '../components/transit-map.ts';
   import '../components/theme-toggle.ts';
+  import '../components/stop-sheet.ts';
 
   bootState();
 </script>
