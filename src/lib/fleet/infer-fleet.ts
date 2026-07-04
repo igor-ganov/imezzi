@@ -60,6 +60,7 @@ export const inferFleet = (
         lat: placed?.point[1] ?? anchor[1],
         approximated: false,
         bearing: placed?.bearing,
+        ageSeconds: Math.max(nowSeconds - best.fetchedAtSeconds, 0),
       };
     },
   );

@@ -12,4 +12,6 @@ export interface VehicleView {
   readonly dimmed?: boolean;
   /** Travel direction in compass degrees (arrow marker), if known. */
   readonly bearing?: number | undefined;
+  /** Age of the newest data behind this position, in seconds. */
+  readonly ageSeconds?: number;
 }
