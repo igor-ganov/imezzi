@@ -5,7 +5,10 @@ import { toVehiclesGeojson } from '../../lib/map/to-vehicles-geojson.ts';
 import { appState } from '../../lib/store/app-state.ts';
 import { addLayers } from './add-layers.ts';
 import { applySelection } from './apply-selection.ts';
+import { bindCivicEvents } from './bind-civic-events.ts';
+import { bindSearchPin } from './bind-search-pin.ts';
 import { bindStopEvents } from './bind-stop-events.ts';
+import { startCivicLoader } from './civic-loader.ts';
 import { startLivePoller } from './live-poller.ts';
 import { loadMapData, type MapData } from './map-data.ts';
 import { setSourceData } from './set-source-data.ts';
@@ -46,6 +49,9 @@ export const makeMapController = (container: HTMLElement) => {
       syncSelection();
     });
     bindStopEvents(map);
+    bindCivicEvents(map);
+    bindSearchPin(map);
+    startCivicLoader(map);
     loadMapData().then((data) => {
       state.data = data;
       syncStops();

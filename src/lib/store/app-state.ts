@@ -1,4 +1,5 @@
 import { signal } from './signal.ts';
+import type { CivicHit } from '../civic/civic-hit.ts';
 import type { Itinerary } from '../route/types.ts';
 import type { VehicleView } from '../vehicles/types.ts';
 
@@ -11,6 +12,10 @@ export const appState = {
   selectedLines: signal<ReadonlySet<string>>(new Set()),
   /** Stop id whose sheet is open. */
   activeStopId: signal<string | undefined>(undefined),
+  /** Civic number whose card is open. */
+  activeCivic: signal<CivicHit | undefined>(undefined),
+  /** Search result pinned on the map (flyTo target). */
+  searchPin: signal<CivicHit | undefined>(undefined),
   /** Active route itinerary (route mode) — undefined when off. */
   itinerary: signal<Itinerary | undefined>(undefined),
   /** Route planner panel open. */

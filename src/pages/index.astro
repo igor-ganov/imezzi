@@ -22,8 +22,10 @@ import Layout from '../layouts/Layout.astro';
     <theme-toggle></theme-toggle>
   </div>
 
+  <search-dock></search-dock>
   <line-filter></line-filter>
   <stop-sheet></stop-sheet>
+  <civic-card></civic-card>
 </Layout>
 
 <script>
@@ -32,6 +34,8 @@ import Layout from '../layouts/Layout.astro';
   import '../components/theme-toggle.ts';
   import '../components/stop-sheet.ts';
   import '../components/line-filter.ts';
+  import '../components/search-dock.ts';
+  import '../components/civic-card.ts';
 
   bootState();
 </script>
