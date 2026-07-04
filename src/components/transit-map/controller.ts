@@ -12,7 +12,6 @@ import { wireStore } from './wire-store.ts';
 import { loadMapData, type MapData } from './map-data.ts';
 import { makeStateMarker } from './state-marker.ts';
 import { makeSyncers } from './make-syncers.ts';
-import { publishViewport } from './publish-viewport.ts';
 
 const GENOA: readonly [number, number] = [8.9463, 44.4095];
 
@@ -52,7 +51,6 @@ export const makeMapController = (container: HTMLElement) => {
     bindRouteMode(map);
     bindPickMode(map);
     startCivicLoader(map);
-    publishViewport(map);
     loadMapData().then((data) => {
       state.data = data;
       syncStops();

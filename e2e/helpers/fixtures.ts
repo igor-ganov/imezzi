@@ -1,5 +1,6 @@
 import { encodePolyline } from './encode-polyline.ts';
 import arrivals from '../fixtures/arrivals.json' with { type: 'json' };
+import busOffsets from '../fixtures/bus-offsets.json' with { type: 'json' };
 import geometry from '../fixtures/geometry.json' with { type: 'json' };
 import lines from '../fixtures/lines.json' with { type: 'json' };
 import lineStops from '../fixtures/line-stops.json' with { type: 'json' };
@@ -13,6 +14,7 @@ import wfs from '../fixtures/wfs.json' with { type: 'json' };
  */
 export const FIXTURES = {
   'arrivals.json': arrivals,
+  'bus-offsets.json': busOffsets,
   'geometry.json': geometry,
   'lines.json': lines,
   'line-stops.json': lineStops,

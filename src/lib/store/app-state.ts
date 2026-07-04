@@ -1,8 +1,8 @@
 import { signal } from './signal.ts';
 import type { CivicHit } from '../civic/civic-hit.ts';
+import type { FleetSighting } from '../fleet/types.ts';
 import type { PinTarget } from '../map/pin-target.ts';
 import type { Itinerary, Leg, Place } from '../route/types.ts';
-import type { LiveSnapshot } from '../vehicles/live-snapshot.ts';
 
 /**
  * Global UI state (live-map design §4). Islands subscribe to slices;
@@ -11,6 +11,8 @@ import type { LiveSnapshot } from '../vehicles/live-snapshot.ts';
 export const appState = {
   /** Selected line keys; empty set = no filter (full network). */
   selectedLines: signal<ReadonlySet<string>>(new Set()),
+  /** Normalized labels of the selected lines (fleet filtering). */
+  selectedLabels: signal<ReadonlySet<string>>(new Set()),
   /** Stop id whose sheet is open. */
   activeStopId: signal<string | undefined>(undefined),
   /** Civic number whose card is open. */
@@ -30,19 +32,8 @@ export const appState = {
   focusLeg: signal<Leg | undefined>(undefined),
   /** Route planner panel open. */
   planning: signal<boolean>(false),
-  /** Current map viewport (drives ambient live polling). */
-  viewport: signal<
-    | {
-        readonly west: number;
-        readonly south: number;
-        readonly east: number;
-        readonly north: number;
-        readonly zoom: number;
-      }
-    | undefined
-  >(undefined),
-  /** Raw poll snapshots — positions recompute parametrically per tick. */
-  liveSnapshots: signal<readonly LiveSnapshot[]>([]),
+  /** City-sweep SIMON rows — positions recompute parametrically. */
+  fleetSightings: signal<readonly FleetSighting[]>([]),
   /** Epoch ms of the last successful live fetch (freshness banner). */
   lastLiveUpdate: signal<number>(0),
   /** Resolved theme. */

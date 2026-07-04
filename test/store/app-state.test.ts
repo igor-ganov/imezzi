@@ -27,7 +27,8 @@ describe('appState', () => {
 
   test('collection slices start empty', () => {
     expect(appState.itineraries.get()).toEqual([]);
-    expect(appState.liveSnapshots.get()).toEqual([]);
+    expect(appState.fleetSightings.get()).toEqual([]);
+    expect(appState.selectedLabels.get().size).toBe(0);
   });
 
   test('scalar slices start with documented defaults', () => {

@@ -4,6 +4,7 @@ import { loadLines } from '../lib/data/load-lines.ts';
 import { toggleSelection } from '../lib/lines/toggle-selection.ts';
 import type { UiLine } from '../lib/lines/ui-line.ts';
 import { appState } from '../lib/store/app-state.ts';
+import { applySelectionChange } from './line-filter/apply-selection-change.ts';
 import { renderRoot } from './line-filter/render-root.ts';
 
 /** FAB + dock to filter the network by lines (live-map US-2). */
@@ -36,7 +37,7 @@ export class LineFilter extends LitElement {
   }
 
   private readonly onToggle = (key: string): void =>
-    appState.selectedLines.set(toggleSelection(this.selected, key));
+    applySelectionChange(this.lines, toggleSelection(this.selected, key));
 
   protected override render(): TemplateResult {
     return renderRoot(
@@ -49,7 +50,7 @@ export class LineFilter extends LitElement {
           this.query = query;
         },
         onToggle: this.onToggle,
-        onClear: () => appState.selectedLines.set(new Set()),
+        onClear: () => applySelectionChange(this.lines, new Set()),
       },
     );
   }

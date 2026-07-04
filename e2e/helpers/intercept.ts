@@ -24,6 +24,9 @@ export const intercept = async (page: Page): Promise<void> => {
   await page.route('**/data/schedule.json', (route) =>
     route.fulfill({ json: makeSchedule() }),
   );
+  await page.route('**/data/bus-offsets.json', (route) =>
+    route.fulfill({ json: fixture('bus-offsets.json') }),
+  );
   await page.route('https://tiles.openfreemap.org/styles/**', (route) =>
     route.fulfill({ json: emptyStyle() }),
   );

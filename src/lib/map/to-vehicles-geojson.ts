@@ -8,6 +8,8 @@ export interface VehicleProps {
   readonly lineKey: string;
   readonly approximated: boolean;
   readonly dimmed: boolean;
+  /** Compass degrees for the direction arrow; -1 = unknown. */
+  readonly bearing: number;
 }
 
 /** Vehicle views → GeoJSON points for the `vehicles` source. */
@@ -25,6 +27,7 @@ export const toVehiclesGeojson = (
       lineKey: vehicle.lineKey,
       approximated: vehicle.approximated,
       dimmed: vehicle.dimmed ?? false,
+      bearing: vehicle.bearing ?? -1,
     },
   })),
 });

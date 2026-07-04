@@ -4,6 +4,7 @@
  * under public/data/. Run: `bun scripts/build-gtfs.ts`.
  */
 import { unzipSync } from 'fflate';
+import { buildBusOffsets } from './gtfs/build-bus-offsets.ts';
 import { buildSchedule } from './gtfs/build-schedule.ts';
 import { modeOf } from './gtfs/mode-of.ts';
 import { parseGtfsCsv } from './gtfs/parse-gtfs-csv.ts';
@@ -48,11 +49,17 @@ const lines = routes.map((route) => ({
   mode: modeOf(route['route_type'] ?? ''),
 }));
 
+const stopNames = new Map(
+  stops.map((stop) => [stop['stop_id'] ?? '', stop['stop_name'] ?? '']),
+);
+const busOffsets = buildBusOffsets(routes, trips, stopTimes, stopNames);
+
 await Bun.write(
   'public/data/schedule.json',
   JSON.stringify({ ...schedule, stops: stopsDict }),
 );
 await Bun.write('public/data/lines.json', JSON.stringify(lines));
+await Bun.write('public/data/bus-offsets.json', JSON.stringify(busOffsets));
 console.log(
-  `lines.json: ${lines.length} routes; schedule.json: ${schedule.lines.length} non-bus lines, ${referenced.size} stops`,
+  `lines.json: ${lines.length} routes; schedule.json: ${schedule.lines.length} non-bus lines, ${referenced.size} stops; bus-offsets.json: ${Object.keys(busOffsets).length} bus routes`,
 );

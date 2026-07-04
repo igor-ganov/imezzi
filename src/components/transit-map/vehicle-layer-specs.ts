@@ -4,6 +4,7 @@ import type {
   SymbolLayerSpecification,
 } from 'maplibre-gl';
 import { byModeColor } from './by-mode-color.ts';
+import { vehicleArrowSpec } from './vehicle-arrow-spec.ts';
 import { vehicleBadgeSpecs } from './vehicle-badge-specs.ts';
 
 const CONTRAST = { light: '#ffffff', dark: '#10161f' };
@@ -43,5 +44,5 @@ export const vehicleLayerSpecs = (
       'circle-stroke-opacity': unlessDimmed(1),
     },
   };
-  return [halo, dot, ...vehicleBadgeSpecs(theme)];
+  return [halo, dot, vehicleArrowSpec(), ...vehicleBadgeSpecs(theme)];
 };

@@ -10,4 +10,6 @@ export interface VehicleView {
   readonly approximated: boolean;
   /** Faded out in route mode when not serving the itinerary. */
   readonly dimmed?: boolean;
+  /** Travel direction in compass degrees (arrow marker), if known. */
+  readonly bearing?: number | undefined;
 }

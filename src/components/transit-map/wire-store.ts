@@ -1,7 +1,7 @@
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import { styleUrl } from '../../lib/map/style-url.ts';
 import { appState } from '../../lib/store/app-state.ts';
-import { startLivePoller } from './live-poller.ts';
+import { startFleetPoller } from './fleet-poller.ts';
 
 /** Store → map reactions: theme, selection, route mode, live fleet. */
 export const wireStore = (
@@ -17,6 +17,6 @@ export const wireStore = (
     hooks.syncSelection();
     hooks.syncVehicles();
   });
-  appState.liveSnapshots.subscribe(hooks.syncVehicles);
-  startLivePoller();
+  appState.fleetSightings.subscribe(hooks.syncVehicles);
+  startFleetPoller();
 };

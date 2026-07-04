@@ -18,6 +18,11 @@ export const makeStateMarker = (container: HTMLElement) => {
     vehicles: (count: number): void => {
       host?.setAttribute('data-vehicles', `${count}`);
     },
+    /** The count invariant: unique vehicles in data vs markers drawn. */
+    fleet: (computed: number, rendered: number): void => {
+      host?.setAttribute('data-fleet-computed', `${computed}`);
+      host?.setAttribute('data-live-rendered', `${rendered}`);
+    },
     routeLegs: (count: number): void => {
       host?.setAttribute('data-route-legs', `${count}`);
     },
