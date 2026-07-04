@@ -4,7 +4,9 @@ import { toStopsGeojson } from '../../lib/map/to-stops-geojson.ts';
 import { toVehiclesGeojson } from '../../lib/map/to-vehicles-geojson.ts';
 import { appState } from '../../lib/store/app-state.ts';
 import { addLayers } from './add-layers.ts';
+import { applySelection } from './apply-selection.ts';
 import { bindStopEvents } from './bind-stop-events.ts';
+import { startLivePoller } from './live-poller.ts';
 import { loadMapData, type MapData } from './map-data.ts';
 import { setSourceData } from './set-source-data.ts';
 import { vehiclesNow } from './vehicles-now.ts';
@@ -35,10 +37,13 @@ export const makeMapController = (container: HTMLElement) => {
       forData((data) =>
         setSourceData(map, 'vehicles', toVehiclesGeojson(vehiclesNow(data))),
       );
+    const syncSelection = () =>
+      forData((data) => void applySelection(map, data));
     map.on('style.load', () => {
       addLayers(map, appState.theme.get());
       syncStops();
       syncVehicles();
+      syncSelection();
     });
     bindStopEvents(map);
     loadMapData().then((data) => {
@@ -48,6 +53,9 @@ export const makeMapController = (container: HTMLElement) => {
     });
     globalThis.setInterval(syncVehicles, 1000);
     appState.theme.subscribe((theme) => map.setStyle(styleUrl(theme)));
+    appState.selectedLines.subscribe(syncSelection);
+    appState.liveVehicles.subscribe(syncVehicles);
+    startLivePoller();
   };
   return { start };
 };

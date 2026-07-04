@@ -11,7 +11,10 @@ import type { MapData } from './map-data.ts';
  */
 export const vehiclesNow = (data: MapData): readonly VehicleView[] => {
   const selected = appState.selectedLines.get();
-  return scheduleVehicles(data.schedule, romeClock(new Date())).filter(
-    (vehicle) => selected.size === 0 || selected.has(vehicle.lineKey),
-  );
+  return [
+    ...scheduleVehicles(data.schedule, romeClock(new Date())).filter(
+      (vehicle) => selected.size === 0 || selected.has(vehicle.lineKey),
+    ),
+    ...appState.liveVehicles.get(),
+  ];
 };

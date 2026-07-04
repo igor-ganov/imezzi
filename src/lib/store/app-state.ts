@@ -1,5 +1,6 @@
 import { signal } from './signal.ts';
 import type { Itinerary } from '../route/types.ts';
+import type { VehicleView } from '../vehicles/types.ts';
 
 /**
  * Global UI state (live-map design §4). Islands subscribe to slices;
@@ -14,6 +15,8 @@ export const appState = {
   itinerary: signal<Itinerary | undefined>(undefined),
   /** Route planner panel open. */
   planning: signal<boolean>(false),
+  /** Live inferred bus positions from the poller (design §2). */
+  liveVehicles: signal<readonly VehicleView[]>([]),
   /** Epoch ms of the last successful live fetch (freshness banner). */
   lastLiveUpdate: signal<number>(0),
   /** Resolved theme. */
