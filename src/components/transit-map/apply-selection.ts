@@ -28,11 +28,22 @@ export const applySelection = async (
       paths.filter((path): path is RoutePath => path !== undefined),
     ),
   );
+  const itinerary = appState.itinerary.get();
+  const routeStops = new Set(
+    (itinerary?.legs ?? []).flatMap((leg) => [
+      leg.from.stopId ?? '',
+      leg.to.stopId ?? '',
+      ...leg.intermediateStops.map((stop) => stop.stopId ?? ''),
+    ]),
+  );
   const served = servedStopIds(selected, data.stops, data.schedule);
+  const active = selected.size > 0 || itinerary !== undefined;
   data.stops.forEach((stop, index) =>
     map.setFeatureState(
       { source: 'stops', id: index },
-      { dimmed: selected.size > 0 && !served.has(stop.id) },
+      {
+        dimmed: active && !served.has(stop.id) && !routeStops.has(stop.id),
+      },
     ),
   );
 };

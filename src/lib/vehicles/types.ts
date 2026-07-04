@@ -8,4 +8,6 @@ export interface VehicleView {
   readonly lon: number;
   /** true = timetable-derived position/time (⚠ badge). */
   readonly approximated: boolean;
+  /** Faded out in route mode when not serving the itinerary. */
+  readonly dimmed?: boolean;
 }

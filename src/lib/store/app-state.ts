@@ -1,6 +1,6 @@
 import { signal } from './signal.ts';
 import type { CivicHit } from '../civic/civic-hit.ts';
-import type { Itinerary } from '../route/types.ts';
+import type { Itinerary, Leg, Place } from '../route/types.ts';
 import type { VehicleView } from '../vehicles/types.ts';
 
 /**
@@ -18,6 +18,15 @@ export const appState = {
   searchPin: signal<CivicHit | undefined>(undefined),
   /** Active route itinerary (route mode) — undefined when off. */
   itinerary: signal<Itinerary | undefined>(undefined),
+  /** All computed alternatives for the current query. */
+  itineraries: signal<readonly Itinerary[]>([]),
+  /** Route origin / destination (route-planner US-1). */
+  origin: signal<Place | undefined>(undefined),
+  destination: signal<Place | undefined>(undefined),
+  /** Next map click sets this endpoint. */
+  pickMode: signal<'origin' | 'destination' | undefined>(undefined),
+  /** Leg the map should zoom to (route-planner AC-4.2). */
+  focusLeg: signal<Leg | undefined>(undefined),
   /** Route planner panel open. */
   planning: signal<boolean>(false),
   /** Live inferred bus positions from the poller (design §2). */

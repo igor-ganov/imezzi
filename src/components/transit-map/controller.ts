@@ -6,10 +6,12 @@ import { appState } from '../../lib/store/app-state.ts';
 import { addLayers } from './add-layers.ts';
 import { applySelection } from './apply-selection.ts';
 import { bindCivicEvents } from './bind-civic-events.ts';
+import { bindPickMode } from './bind-pick-mode.ts';
+import { bindRouteMode } from './bind-route-mode.ts';
 import { bindSearchPin } from './bind-search-pin.ts';
 import { bindStopEvents } from './bind-stop-events.ts';
 import { startCivicLoader } from './civic-loader.ts';
-import { startLivePoller } from './live-poller.ts';
+import { wireStore } from './wire-store.ts';
 import { loadMapData, type MapData } from './map-data.ts';
 import { setSourceData } from './set-source-data.ts';
 import { vehiclesNow } from './vehicles-now.ts';
@@ -51,6 +53,8 @@ export const makeMapController = (container: HTMLElement) => {
     bindStopEvents(map);
     bindCivicEvents(map);
     bindSearchPin(map);
+    bindRouteMode(map);
+    bindPickMode(map);
     startCivicLoader(map);
     loadMapData().then((data) => {
       state.data = data;
@@ -58,10 +62,7 @@ export const makeMapController = (container: HTMLElement) => {
       syncVehicles();
     });
     globalThis.setInterval(syncVehicles, 1000);
-    appState.theme.subscribe((theme) => map.setStyle(styleUrl(theme)));
-    appState.selectedLines.subscribe(syncSelection);
-    appState.liveVehicles.subscribe(syncVehicles);
-    startLivePoller();
+    wireStore(map, { syncSelection, syncVehicles });
   };
   return { start };
 };

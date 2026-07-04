@@ -4,10 +4,12 @@ import { busContextOf } from '../../lib/data/bus-context-of.ts';
 import { loadLines } from '../../lib/data/load-lines.ts';
 import type { UiLine } from '../../lib/lines/ui-line.ts';
 import { poolMap } from '../../lib/pool-map.ts';
+import { itineraryLines } from '../../lib/route/itinerary-lines.ts';
 import { romeClock } from '../../lib/schedule/rome-clock.ts';
 import { sampleEvery } from '../../lib/sample-every.ts';
 import { appState } from '../../lib/store/app-state.ts';
 import { inferBusVehicles } from '../../lib/vehicles/infer-bus-vehicles.ts';
+import { normalizeLineLabel } from '../../lib/vehicles/normalize-line-label.ts';
 import type { StopArrival } from '../../lib/vehicles/stop-arrival.ts';
 import type { VehicleView } from '../../lib/vehicles/types.ts';
 
@@ -35,13 +37,18 @@ const pollLine = async (line: UiLine): Promise<readonly VehicleView[]> => {
 export const startLivePoller = (): void => {
   const poll = async (): Promise<void> => {
     const selected = appState.selectedLines.get();
+    const routeLabels = itineraryLines(appState.itinerary.get());
     const lines = (await loadLines()).filter(
-      (line) => line.mode === 'bus' && selected.has(line.key),
+      (line) =>
+        line.mode === 'bus' &&
+        (selected.has(line.key) ||
+          routeLabels.has(normalizeLineLabel(line.label))),
     );
     const views = await Promise.all(lines.map(pollLine));
     appState.liveVehicles.set(views.flat());
     appState.lastLiveUpdate.set(Date.now());
   };
   appState.selectedLines.subscribe(() => void poll());
+  appState.itinerary.subscribe(() => void poll());
   globalThis.setInterval(() => void poll(), POLL_MS);
 };

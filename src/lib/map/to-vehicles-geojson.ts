@@ -7,6 +7,7 @@ export interface VehicleProps {
   readonly mode: string;
   readonly lineKey: string;
   readonly approximated: boolean;
+  readonly dimmed: boolean;
 }
 
 /** Vehicle views → GeoJSON points for the `vehicles` source. */
@@ -23,6 +24,7 @@ export const toVehiclesGeojson = (
       mode: vehicle.mode,
       lineKey: vehicle.lineKey,
       approximated: vehicle.approximated,
+      dimmed: vehicle.dimmed ?? false,
     },
   })),
 });

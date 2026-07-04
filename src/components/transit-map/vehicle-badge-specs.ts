@@ -1,10 +1,18 @@
 import type {
   CircleLayerSpecification,
+  ExpressionSpecification,
   SymbolLayerSpecification,
 } from 'maplibre-gl';
 
 const CONTRAST = { light: '#ffffff', dark: '#10161f' };
 const WARN = { light: 'hsl(35 95% 44%)', dark: 'hsl(38 100% 58%)' };
+
+const unlessDimmed = (full: number): ExpressionSpecification => [
+  'case',
+  ['get', 'dimmed'],
+  full * 0.15,
+  full,
+];
 
 /** ⚠ approximation badge + line-number label layers. */
 export const vehicleBadgeSpecs = (
@@ -21,6 +29,8 @@ export const vehicleBadgeSpecs = (
       'circle-stroke-color': CONTRAST[theme],
       'circle-stroke-width': 1.5,
       'circle-translate': [9, -9],
+      'circle-opacity': unlessDimmed(1),
+      'circle-stroke-opacity': unlessDimmed(1),
     },
   };
   const label: SymbolLayerSpecification = {
@@ -33,7 +43,10 @@ export const vehicleBadgeSpecs = (
       'text-size': 10,
       'text-allow-overlap': true,
     },
-    paint: { 'text-color': CONTRAST[theme] },
+    paint: {
+      'text-color': CONTRAST[theme],
+      'text-opacity': unlessDimmed(1),
+    },
   };
   return [warn, label];
 };

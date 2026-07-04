@@ -5,7 +5,12 @@ import { appState } from '../../lib/store/app-state.ts';
 export const bindStopEvents = (map: MapLibreMap): void => {
   map.on('click', 'stops-circle', (event) => {
     const id = event.features?.[0]?.properties?.['id'];
-    appState.activeStopId.set(`${id ?? ''}` || undefined);
+    const picking = appState.pickMode.get() !== undefined;
+    appState.activeStopId.set(
+      { true: appState.activeStopId.get(), false: `${id ?? ''}` || undefined }[
+        `${picking}`
+      ],
+    );
   });
   map.on('mouseenter', 'stops-circle', () => {
     map.getCanvas().style.cursor = 'pointer';

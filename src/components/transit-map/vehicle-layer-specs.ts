@@ -1,11 +1,19 @@
 import type {
   CircleLayerSpecification,
+  ExpressionSpecification,
   SymbolLayerSpecification,
 } from 'maplibre-gl';
 import { byModeColor } from './by-mode-color.ts';
 import { vehicleBadgeSpecs } from './vehicle-badge-specs.ts';
 
 const CONTRAST = { light: '#ffffff', dark: '#10161f' };
+
+const unlessDimmed = (full: number): ExpressionSpecification => [
+  'case',
+  ['get', 'dimmed'],
+  full * 0.15,
+  full,
+];
 
 /** Vehicle marker layers: halo, dot, then badge + label. */
 export const vehicleLayerSpecs = (
@@ -18,7 +26,7 @@ export const vehicleLayerSpecs = (
     paint: {
       'circle-radius': 13,
       'circle-color': byModeColor(theme),
-      'circle-opacity': 0.22,
+      'circle-opacity': unlessDimmed(0.22),
       'circle-blur': 0.4,
     },
   };
@@ -31,6 +39,8 @@ export const vehicleLayerSpecs = (
       'circle-color': byModeColor(theme),
       'circle-stroke-color': CONTRAST[theme],
       'circle-stroke-width': 2,
+      'circle-opacity': unlessDimmed(1),
+      'circle-stroke-opacity': unlessDimmed(1),
     },
   };
   return [halo, dot, ...vehicleBadgeSpecs(theme)];
