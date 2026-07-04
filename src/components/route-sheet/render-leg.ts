@@ -13,7 +13,13 @@ const badgeText = (leg: Leg): string =>
 /** One itinerary leg row; click focuses the map on it (AC-4.2). */
 export const renderLeg = (leg: Leg): TemplateResult => html`
   <li>
-    <button class="leg-row" @click=${() => appState.focusLeg.set(leg)}>
+    <button
+      class="leg-row"
+      data-testid="route-leg"
+      data-mode=${leg.mode}
+      data-approximated=${leg.approximated}
+      @click=${() => appState.focusLeg.set(leg)}
+    >
       <span class="leg-times">
         ${formatClock(leg.startTime)}<br />${formatClock(leg.endTime)}
       </span>

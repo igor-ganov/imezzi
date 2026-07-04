@@ -12,6 +12,8 @@ export const renderLineItem = (
   <li>
     <button
       class=${classMap({ 'line-item': true, 'is-selected': selected })}
+      data-testid="filter-line-item"
+      data-line-key=${line.key}
       role="switch"
       aria-checked=${selected}
       @click=${() => onToggle(line.key)}

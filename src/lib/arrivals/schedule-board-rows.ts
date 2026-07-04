@@ -1,4 +1,5 @@
 import { activeServices } from '../schedule/active-services.ts';
+import { prevDay } from '../schedule/prev-day.ts';
 import type { Schedule, ScheduleLine } from '../schedule/types.ts';
 import type { BoardRow } from './board-row.ts';
 
@@ -29,14 +30,26 @@ const lineRows = (
       }));
   });
 
-/** Timetable departures from a stop (non-bus modes, ⚠ AC-3.2). */
+/**
+ * Timetable departures from a stop (non-bus modes, ⚠ AC-3.2).
+ * Checks today's services plus yesterday's trips running past
+ * midnight (GTFS times may exceed 24 h), like scheduleVehicles.
+ */
 export const scheduleBoardRows = (
   schedule: Schedule,
   stopId: string,
   clock: { readonly day: string; readonly seconds: number },
 ): readonly BoardRow[] => {
-  const services = activeServices(schedule, clock.day);
-  return schedule.lines.flatMap((line) =>
-    lineRows(schedule, line, stopId, services, clock.seconds),
+  const contexts = [
+    { services: activeServices(schedule, clock.day), seconds: clock.seconds },
+    {
+      services: activeServices(schedule, prevDay(clock.day)),
+      seconds: clock.seconds + 86400,
+    },
+  ];
+  return contexts.flatMap(({ services, seconds }) =>
+    schedule.lines.flatMap((line) =>
+      lineRows(schedule, line, stopId, services, seconds),
+    ),
   );
 };

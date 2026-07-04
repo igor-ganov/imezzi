@@ -11,6 +11,7 @@ export const renderDockHead = (
   <div class="dock-head">
     <input
       class="dock-search"
+      data-testid="filter-search"
       type="search"
       placeholder="Line number or destination…"
       aria-label="Search lines"
@@ -23,7 +24,11 @@ export const renderDockHead = (
     />
     ${branch(selectedCount > 0)(
       () =>
-        html`<button class="dock-clear" @click=${actions.onClear}>
+        html`<button
+          class="dock-clear"
+          data-testid="filter-clear"
+          @click=${actions.onClear}
+        >
           Clear ${selectedCount}
         </button>`,
       () => html``,

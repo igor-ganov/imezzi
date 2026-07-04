@@ -1,9 +1,9 @@
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import { appState } from '../../lib/store/app-state.ts';
 
-/** Stop layer interactivity: click opens the sheet, hover cursor. */
+/** Stop interactivity on the padded hit layer (site AC-1.2). */
 export const bindStopEvents = (map: MapLibreMap): void => {
-  map.on('click', 'stops-circle', (event) => {
+  map.on('click', 'stops-hit', (event) => {
     const id = event.features?.[0]?.properties?.['id'];
     const picking = appState.pickMode.get() !== undefined;
     appState.activeStopId.set(
@@ -12,10 +12,10 @@ export const bindStopEvents = (map: MapLibreMap): void => {
       ],
     );
   });
-  map.on('mouseenter', 'stops-circle', () => {
+  map.on('mouseenter', 'stops-hit', () => {
     map.getCanvas().style.cursor = 'pointer';
   });
-  map.on('mouseleave', 'stops-circle', () => {
+  map.on('mouseleave', 'stops-hit', () => {
     map.getCanvas().style.cursor = '';
   });
 };

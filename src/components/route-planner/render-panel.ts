@@ -1,10 +1,10 @@
 import { html, type TemplateResult } from 'lit';
-import { branch } from '../../lib/branch.ts';
 import { appState } from '../../lib/store/app-state.ts';
 import type { PanelActions, PanelState } from './panel-contract.ts';
-import { renderAlternatives } from './render-alternatives.ts';
 import { renderDestinationSearch } from './render-destination-search.ts';
 import { renderEndpoint } from './render-endpoint.ts';
+import { renderPanelFooter } from './render-panel-footer.ts';
+import { PLANNER_LOCATORS } from './route-planner.locators.ts';
 
 export type { PanelActions, PanelState } from './panel-contract.ts';
 
@@ -13,15 +13,24 @@ export const renderPanel = (
   state: PanelState,
   actions: PanelActions,
 ): TemplateResult => html`
-  <section class="planner" aria-label="Route planner">
+  <section
+    class="planner"
+    data-testid=${PLANNER_LOCATORS.panel}
+    aria-label="Route planner"
+  >
     ${renderEndpoint(
       'From',
       state.origin,
       state.pickMode === 'origin',
       () => appState.pickMode.set('origin'),
-      html`<button class="planner-btn" @click=${actions.onLocate}>
+      html`<button
+        class="planner-btn"
+        data-testid=${PLANNER_LOCATORS.locate}
+        @click=${actions.onLocate}
+      >
         my location
       </button>`,
+      PLANNER_LOCATORS.pickOrigin,
     )}
     ${renderEndpoint(
       'To',
@@ -29,23 +38,13 @@ export const renderPanel = (
       state.pickMode === 'destination',
       () => appState.pickMode.set('destination'),
       html``,
+      PLANNER_LOCATORS.pickDestination,
     )}
     ${renderDestinationSearch(
       state.destinationHits,
       actions.onDestinationQuery,
       actions.onDestinationPick,
     )}
-    ${branch(state.busy)(
-      () => html`<p class="sheet-note">Planning…</p>`,
-      () => html``,
-    )}
-    ${renderAlternatives(state.itineraries, state.itinerary)}
-    ${branch(state.itinerary !== undefined || state.origin !== undefined)(
-      () =>
-        html`<button class="dock-clear planner-clear" @click=${actions.onClear}>
-          Clear route
-        </button>`,
-      () => html``,
-    )}
+    ${renderPanelFooter(state, actions)}
   </section>
 `;

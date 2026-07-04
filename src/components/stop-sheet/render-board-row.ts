@@ -29,7 +29,12 @@ const fullBadge = (row: BoardRow): TemplateResult =>
 
 /** One departure-board row: badge, destination, status, ETA. */
 export const renderBoardRow = (row: BoardRow): TemplateResult => html`
-  <li class="board-row">
+  <li
+    class="board-row"
+    data-testid="board-row"
+    data-line=${row.line}
+    data-approximated=${row.approximated}
+  >
     <span class="line-badge" style="--hue: ${MODE_HUES[row.mode] ?? 208}"
       >${row.line}</span
     >

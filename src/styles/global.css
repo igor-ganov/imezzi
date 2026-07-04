@@ -652,7 +652,16 @@ route-planner .fab-route {
   padding: 0.4rem 0.9rem;
 }
 
-/* Itinerary sheet */
+/* Itinerary sheet — anchored left so it never covers the planner
+   panel on the right (route alternatives stay clickable). */
+@media (min-width: 900px) {
+  .route-sheet {
+    left: 0.75rem;
+    transform: none;
+    animation: none;
+  }
+}
+
 .route-sheet .sheet-subtitle {
   display: block;
   font-size: var(--step--1);

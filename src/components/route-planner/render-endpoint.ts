@@ -8,12 +8,16 @@ export const renderEndpoint = (
   picking: boolean,
   onPick: () => void,
   extra: TemplateResult,
+  pickTestId: string,
 ): TemplateResult => html`
   <div class="planner-row">
     <span class="planner-label">${label}</span>
-    <span class="planner-value">${place?.name ?? '—'}</span>
+    <span class="planner-value" data-testid="${pickTestId}-value"
+      >${place?.name ?? '—'}</span
+    >
     <button
       class="planner-btn"
+      data-testid=${pickTestId}
       aria-pressed=${picking}
       title="Pick on the map"
       @click=${onPick}

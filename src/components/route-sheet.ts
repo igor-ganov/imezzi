@@ -26,7 +26,11 @@ export class RouteSheet extends LitElement {
     return branch(this.itinerary === undefined)(
       () => html``,
       () => html`
-        <section class="sheet route-sheet" aria-label="Itinerary">
+        <section
+          class="sheet route-sheet"
+          data-testid="route-sheet"
+          aria-label="Itinerary"
+        >
           <header class="sheet-header">
             <h2 class="sheet-title">
               ${formatClock(this.itinerary?.startTime ?? '')} →
@@ -38,6 +42,7 @@ export class RouteSheet extends LitElement {
             </h2>
             <button
               class="chrome-btn sheet-close"
+              data-testid="route-sheet-close"
               aria-label="Close route"
               @click=${() => {
                 appState.itinerary.set(undefined);

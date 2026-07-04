@@ -3,6 +3,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import { formatDuration } from '../../lib/route/format-duration.ts';
 import type { Itinerary } from '../../lib/route/types.ts';
 import { appState } from '../../lib/store/app-state.ts';
+import { PLANNER_LOCATORS } from './route-planner.locators.ts';
 
 /** Alternative itineraries as selectable chips (route-planner §2). */
 export const renderAlternatives = (
@@ -17,6 +18,7 @@ export const renderAlternatives = (
             'alt-chip': true,
             'is-active': itinerary === active,
           })}
+          data-testid=${PLANNER_LOCATORS.altChip}
           role="tab"
           aria-selected=${itinerary === active}
           @click=${() => appState.itinerary.set(itinerary)}

@@ -2,6 +2,7 @@ import { html, type TemplateResult } from 'lit';
 import { filterLines } from '../../lib/lines/filter-lines.ts';
 import type { UiLine } from '../../lib/lines/ui-line.ts';
 import type { DockActions } from './dock-actions.ts';
+import { FILTER_LOCATORS } from './line-filter.locators.ts';
 import { renderDockHead } from './render-dock-head.ts';
 import { renderSection } from './render-section.ts';
 
@@ -25,7 +26,11 @@ export const renderDock = (
 ): TemplateResult => {
   const visible = filterLines(lines, query);
   return html`
-    <section class="dock" aria-label="Line filter">
+    <section
+      class="dock"
+      data-testid=${FILTER_LOCATORS.dock}
+      aria-label="Line filter"
+    >
       ${renderDockHead(query, selected.size, actions)}
       <div class="dock-body">
         ${MODE_TITLES.map(([mode, title]) =>

@@ -1,10 +1,7 @@
 import { Map as MapLibreMap } from 'maplibre-gl';
 import { styleUrl } from '../../lib/map/style-url.ts';
-import { toStopsGeojson } from '../../lib/map/to-stops-geojson.ts';
-import { toVehiclesGeojson } from '../../lib/map/to-vehicles-geojson.ts';
 import { appState } from '../../lib/store/app-state.ts';
 import { addLayers } from './add-layers.ts';
-import { applySelection } from './apply-selection.ts';
 import { bindCivicEvents } from './bind-civic-events.ts';
 import { bindPickMode } from './bind-pick-mode.ts';
 import { bindRouteMode } from './bind-route-mode.ts';
@@ -13,14 +10,16 @@ import { bindStopEvents } from './bind-stop-events.ts';
 import { startCivicLoader } from './civic-loader.ts';
 import { wireStore } from './wire-store.ts';
 import { loadMapData, type MapData } from './map-data.ts';
-import { setSourceData } from './set-source-data.ts';
-import { vehiclesNow } from './vehicles-now.ts';
+import { makeStateMarker } from './state-marker.ts';
+import { makeSyncers } from './make-syncers.ts';
+import { publishViewport } from './publish-viewport.ts';
 
 const GENOA: readonly [number, number] = [8.9463, 44.4095];
 
 /** Imperative shell around the MapLibre instance (site design §5). */
 export const makeMapController = (container: HTMLElement) => {
   const state: { data?: MapData } = {};
+  const mark = makeStateMarker(container);
   const forData = (fn: (data: MapData) => void) =>
     [state.data]
       .filter((data): data is MapData => data !== undefined)
@@ -36,14 +35,11 @@ export const makeMapController = (container: HTMLElement) => {
         customAttribution: '© AMT Genova · © Comune di Genova (CC BY 4.0)',
       },
     });
-    const syncStops = () =>
-      forData((data) => setSourceData(map, 'stops', toStopsGeojson(data.stops)));
-    const syncVehicles = () =>
-      forData((data) =>
-        setSourceData(map, 'vehicles', toVehiclesGeojson(vehiclesNow(data))),
-      );
-    const syncSelection = () =>
-      forData((data) => void applySelection(map, data));
+    const { syncStops, syncVehicles, syncSelection } = makeSyncers(
+      map,
+      forData,
+      mark,
+    );
     map.on('style.load', () => {
       addLayers(map, appState.theme.get());
       syncStops();
@@ -56,12 +52,16 @@ export const makeMapController = (container: HTMLElement) => {
     bindRouteMode(map);
     bindPickMode(map);
     startCivicLoader(map);
+    publishViewport(map);
     loadMapData().then((data) => {
       state.data = data;
       syncStops();
       syncVehicles();
     });
     globalThis.setInterval(syncVehicles, 1000);
+    appState.itinerary.subscribe((itinerary) =>
+      mark.routeLegs(itinerary?.legs.length ?? 0),
+    );
     wireStore(map, { syncSelection, syncVehicles });
   };
   return { start };

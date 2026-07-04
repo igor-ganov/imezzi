@@ -10,7 +10,7 @@ export const bindSearchPin = (map: MapLibreMap): void => {
       .map((value) => ({
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [value.lon, value.lat] },
-        properties: { label: value.display },
+        properties: { label: value.label },
       }));
     setSourceData(map, 'pin', { type: 'FeatureCollection', features });
     features.forEach(() =>

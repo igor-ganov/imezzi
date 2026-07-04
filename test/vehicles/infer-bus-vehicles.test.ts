@@ -78,6 +78,89 @@ describe('inferBusVehicles', () => {
     );
     expect(views.length).toBe(1);
   });
+
+  test('ignores rows with an empty NumeroSociale', () => {
+    const views = inferBusVehicles(
+      context,
+      [{ stopId: 'B', row: row({ vehicle: '' }) }],
+      0,
+    );
+    expect(views).toEqual([]);
+  });
+
+  test('unknown stop id yields no vehicle', () => {
+    const views = inferBusVehicles(
+      context,
+      [{ stopId: 'Z', row: row({}) }],
+      0,
+    );
+    expect(views).toEqual([]);
+  });
+
+  test('theoretical predictions mark the vehicle approximated', () => {
+    const views = inferBusVehicles(
+      context,
+      [{ stopId: 'B', row: row({ theoretical: true }) }],
+      0,
+    );
+    expect(views.length).toBe(1);
+    expect(views[0]?.approximated).toBe(true);
+  });
+
+  test('direction without a path interpolates the straight segment', () => {
+    const views = inferBusVehicles(
+      context,
+      [
+        {
+          stopId: 'B',
+          row: row({ destination: 'CARICAMENTO', countdown: "1'" }),
+        },
+      ],
+      0,
+    );
+    expect(views.length).toBe(1);
+    expect(views[0]?.lon).toBeCloseTo(8.15, 10);
+    expect(views[0]?.lat).toBeCloseTo(44.15, 10);
+  });
+
+  test('zero countdown places the vehicle at the predicted stop', () => {
+    const views = inferBusVehicles(
+      context,
+      [
+        {
+          stopId: 'B',
+          row: row({ destination: 'CARICAMENTO', countdown: "0'" }),
+        },
+      ],
+      0,
+    );
+    expect(views[0]?.lon).toBeCloseTo(8.1, 10);
+    expect(views[0]?.lat).toBeCloseTo(44.1, 10);
+  });
+
+  test('separate NumeroSociale values become separate vehicles', () => {
+    const views = inferBusVehicles(
+      context,
+      [
+        { stopId: 'B', row: row({ vehicle: '09301' }) },
+        { stopId: 'C', row: row({ vehicle: '09302' }) },
+      ],
+      0,
+    );
+    expect(views.map((view) => view.id).sort()).toEqual([
+      '009-00:09301',
+      '009-00:09302',
+    ]);
+  });
+
+  test('matches padded SIMON codes against the UI label', () => {
+    const views = inferBusVehicles(
+      context,
+      [{ stopId: 'B', row: row({ line: '9' }) }],
+      0,
+    );
+    expect(views.length).toBe(1);
+  });
 });
 
 describe('pickDirection', () => {

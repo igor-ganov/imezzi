@@ -25,6 +25,7 @@ export class ThemeToggle extends LitElement {
     return html`
       <button
         class="chrome-btn"
+        data-testid="theme-toggle"
         aria-label="Theme: ${pref} — click to switch"
         title="Theme: ${pref}"
         @click=${this.onClick}

@@ -1,5 +1,6 @@
 import { signal } from './signal.ts';
 import type { CivicHit } from '../civic/civic-hit.ts';
+import type { PinTarget } from '../map/pin-target.ts';
 import type { Itinerary, Leg, Place } from '../route/types.ts';
 import type { VehicleView } from '../vehicles/types.ts';
 
@@ -15,7 +16,7 @@ export const appState = {
   /** Civic number whose card is open. */
   activeCivic: signal<CivicHit | undefined>(undefined),
   /** Search result pinned on the map (flyTo target). */
-  searchPin: signal<CivicHit | undefined>(undefined),
+  searchPin: signal<PinTarget | undefined>(undefined),
   /** Active route itinerary (route mode) — undefined when off. */
   itinerary: signal<Itinerary | undefined>(undefined),
   /** All computed alternatives for the current query. */
@@ -29,6 +30,17 @@ export const appState = {
   focusLeg: signal<Leg | undefined>(undefined),
   /** Route planner panel open. */
   planning: signal<boolean>(false),
+  /** Current map viewport (drives ambient live polling). */
+  viewport: signal<
+    | {
+        readonly west: number;
+        readonly south: number;
+        readonly east: number;
+        readonly north: number;
+        readonly zoom: number;
+      }
+    | undefined
+  >(undefined),
   /** Live inferred bus positions from the poller (design §2). */
   liveVehicles: signal<readonly VehicleView[]>([]),
   /** Epoch ms of the last successful live fetch (freshness banner). */

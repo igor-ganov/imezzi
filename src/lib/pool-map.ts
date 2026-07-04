@@ -4,9 +4,10 @@ export const poolMap = <T, R>(
   limit: number,
   fn: (item: T) => Promise<R>,
 ): Promise<readonly R[]> => {
+  const size = Math.max(limit, 1);
   const chunks = Array.from(
-    { length: Math.ceil(items.length / Math.max(limit, 1)) },
-    (_, index) => items.slice(index * limit, (index + 1) * limit),
+    { length: Math.ceil(items.length / size) },
+    (_, index) => items.slice(index * size, (index + 1) * size),
   );
   return chunks.reduce<Promise<readonly R[]>>(
     async (accPromise, chunk) => {

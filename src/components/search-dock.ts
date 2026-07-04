@@ -1,14 +1,15 @@
 import { LitElement, html, type TemplateResult } from 'lit';
 import { state } from 'lit/decorators.js';
-import type { CivicHit } from '../lib/civic/civic-hit.ts';
-import { searchCivics } from '../lib/civic/search-civics.ts';
 import { debounce } from '../lib/debounce.ts';
-import { appState } from '../lib/store/app-state.ts';
+import { combinedSearch } from '../lib/search/combined-search.ts';
+import type { SearchHit } from '../lib/search/search-hit.ts';
+import { pickHit } from './search-dock/pick-hit.ts';
 import { renderResults } from './search-dock/render-results.ts';
+import { SEARCH_LOCATORS } from './search-dock/search-dock.locators.ts';
 
-/** Civic-aware address search box (civic-addresses US-2). */
+/** Address + stop search box (civic-addresses US-2, live-map US-3). */
 export class SearchDock extends LitElement {
-  @state() declare hits: readonly CivicHit[];
+  @state() declare hits: readonly SearchHit[];
 
   constructor() {
     super();
@@ -20,19 +21,20 @@ export class SearchDock extends LitElement {
   }
 
   private readonly run = debounce(350, (query: string) => {
-    const wanted = query.trim().length >= 3;
-    void { true: async () => {
-      this.hits = await searchCivics(query).catch(
-        (): readonly CivicHit[] => [],
-      );
-    }, false: () => {
-      this.hits = [];
-    } }[`${wanted}`]();
+    void {
+      true: async () => {
+        this.hits = await combinedSearch(query).catch(
+          (): readonly SearchHit[] => [],
+        );
+      },
+      false: () => {
+        this.hits = [];
+      },
+    }[`${query.trim().length >= 3}`]();
   });
 
-  private readonly onPick = (hit: CivicHit): void => {
-    appState.searchPin.set(hit);
-    appState.activeCivic.set(hit);
+  private readonly onPick = (hit: SearchHit): void => {
+    pickHit(hit);
     this.hits = [];
   };
 
@@ -41,9 +43,10 @@ export class SearchDock extends LitElement {
       <div class="search-wrap">
         <input
           class="search-input"
+          data-testid=${SEARCH_LOCATORS.input}
           type="search"
-          placeholder="Via XX Settembre 20r…"
-          aria-label="Search a Genoa address (red numbers with r)"
+          placeholder="Stop, address, 20r…"
+          aria-label="Search a stop or a Genoa address (red numbers with r)"
           @input=${(event: Event) =>
             this.run(
               (event.target instanceof HTMLInputElement &&

@@ -6,3 +6,6 @@ dist/
 
 .wrangler/
 public/data/
+
+test-results/
+playwright-report/
