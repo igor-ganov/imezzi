@@ -2,10 +2,14 @@ import { groupBy } from '../group-by.ts';
 import { normalizeLineLabel } from '../vehicles/normalize-line-label.ts';
 import type { VehicleView } from '../vehicles/types.ts';
 import { effectiveCountdown } from './effective-countdown.ts';
+import { matchPath } from './match-path.ts';
 import { pickTemplate } from './pick-template.ts';
 import { positionOnDirection } from './position-on-direction.ts';
 import { soonestSighting } from './soonest-sighting.ts';
 import type { BusOffsets, FleetSighting } from './types.ts';
+
+type Path = readonly (readonly [number, number])[];
+type PathsOf = (label: string) => readonly Path[] | undefined;
 
 /**
  * The whole live fleet: EVERY unique NumeroSociale across all
@@ -19,6 +23,7 @@ export const inferFleet = (
   offsets: BusOffsets,
   coords: ReadonlyMap<string, readonly [number, number]>,
   nowSeconds: number,
+  pathsOf: PathsOf = () => undefined,
 ): readonly VehicleView[] => {
   const live = sightings.filter(
     ({ row }) => !row.theoretical && row.vehicle !== '',
@@ -42,6 +47,7 @@ export const inferFleet = (
             coords,
             best.stopId,
             effectiveCountdown(best, nowSeconds),
+            matchPath(pathsOf(label) ?? [], entry, coords),
           ),
         )[0];
       const anchor = coords.get(best.stopId) ?? [0, 0];

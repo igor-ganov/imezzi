@@ -1,4 +1,5 @@
 import { bearingOf } from '../geo/bearing-of.ts';
+import { pointAlongPath } from './point-along-path.ts';
 import type { BusDirectionTemplate } from './types.ts';
 
 export interface Placement {
@@ -11,13 +12,16 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 /**
  * Place a vehicle on its direction's timeline: `countdown` seconds
  * before arriving at `stopId`, i.e. between the two adjacent stops
- * whose travel-time offsets bracket that moment (live-map US-1).
+ * whose travel-time offsets bracket that moment. With a road
+ * polyline the point snaps to the street; otherwise it interpolates
+ * the straight segment (live-map US-1).
  */
 export const positionOnDirection = (
   template: BusDirectionTemplate,
   coords: ReadonlyMap<string, readonly [number, number]>,
   stopId: string,
   countdown: number,
+  path?: readonly (readonly [number, number])[],
 ): Placement | undefined => {
   const index = template.stops.indexOf(stopId);
   const arrival = template.offsets[index] ?? 0;
@@ -36,14 +40,22 @@ export const positionOnDirection = (
     1,
   );
   const usable = index >= 0 && from !== undefined && to !== undefined;
-  return {
-    true: (): Placement => ({
+  const onRoad = usable && (path?.length ?? 0) > 1;
+  const strategies: Readonly<Record<string, () => Placement | undefined>> = {
+    road: () =>
+      pointAlongPath(path ?? [], from ?? [0, 0], to ?? [0, 0], fraction),
+    straight: () => ({
       point: [
         lerp(from?.[0] ?? 0, to?.[0] ?? 0, fraction),
         lerp(from?.[1] ?? 0, to?.[1] ?? 0, fraction),
       ],
       bearing: bearingOf(from ?? [0, 0], to ?? [0, 1]),
     }),
-    false: () => undefined,
-  }[`${usable}`]();
+    none: () => undefined,
+  };
+  const key =
+    { true: 'road', false: { true: 'straight', false: 'none' }[`${usable}`] }[
+      `${onRoad}`
+    ] ?? 'none';
+  return strategies[key]?.();
 };

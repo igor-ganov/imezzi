@@ -1,3 +1,4 @@
+import { fleetPaths } from '../../lib/data/fleet-paths.ts';
 import { inferFleet } from '../../lib/fleet/infer-fleet.ts';
 import { itineraryLines } from '../../lib/route/itinerary-lines.ts';
 import { romeClock } from '../../lib/schedule/rome-clock.ts';
@@ -33,6 +34,7 @@ export const vehiclesNow = (data: MapData): readonly VehicleView[] => {
       data.busOffsets,
       data.stopCoords,
       clock.seconds,
+      fleetPaths.get,
     ).filter(
       (vehicle) =>
         selectedLabels.size === 0 || selectedLabels.has(vehicle.label),

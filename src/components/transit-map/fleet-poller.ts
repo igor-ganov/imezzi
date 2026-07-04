@@ -1,10 +1,12 @@
 import { branch } from '../../lib/branch.ts';
+import { fleetPaths } from '../../lib/data/fleet-paths.ts';
 import { loadLineStops } from '../../lib/data/load-line-stops.ts';
 import { loadStops } from '../../lib/data/load-stops.ts';
 import { fleetPlan } from '../../lib/fleet/fleet-plan.ts';
 import { mergeSightings } from '../../lib/fleet/merge-sightings.ts';
 import { romeClock } from '../../lib/schedule/rome-clock.ts';
 import { appState } from '../../lib/store/app-state.ts';
+import { normalizeLineLabel } from '../../lib/vehicles/normalize-line-label.ts';
 import { fetchStopArrivals } from './fetch-stop-arrivals.ts';
 
 const STRIDE = 6;
@@ -26,13 +28,15 @@ export const startFleetPoller = (): void => {
     const slice = state.plan.slice(state.cursor, state.cursor + PORTION);
     state.cursor = (state.cursor + PORTION) % Math.max(state.plan.length, 1);
     const fresh = await fetchStopArrivals(slice);
-    appState.fleetSightings.set(
-      mergeSightings(
-        appState.fleetSightings.get(),
-        fresh,
-        romeClock(new Date()).seconds,
-        TTL_SECONDS,
-      ),
+    const merged = mergeSightings(
+      appState.fleetSightings.get(),
+      fresh,
+      romeClock(new Date()).seconds,
+      TTL_SECONDS,
+    );
+    appState.fleetSightings.set(merged);
+    fleetPaths.ensure(
+      new Set(merged.map(({ row }) => normalizeLineLabel(row.line))),
     );
     appState.lastLiveUpdate.set(Date.now());
   };
