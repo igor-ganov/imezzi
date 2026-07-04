@@ -74,7 +74,7 @@ const oneValueExport = {
 export default tseslint.config(
   { ignores: ['dist/**', '.astro/**', 'node_modules/**'] },
   {
-    files: ['src/**/*.ts', 'test/**/*.ts'],
+    files: ['src/**/*.ts', 'test/**/*.ts', 'worker/**/*.ts', 'scripts/**/*.ts'],
     extends: [tseslint.configs.recommended],
     plugins: { functional: { rules: { 'max-lines-no-imports': maxLinesNoImports, 'one-value-export': oneValueExport } } },
     rules: {

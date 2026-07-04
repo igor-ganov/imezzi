@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfPrevisione xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://cities-avm/WebServicePrevisioni">
+  <Previsione>
+    <Linea>018</Linea>
+    <Destinazione>SAMPIERDARENA</Destinazione>
+    <Teorica>false</Teorica>
+    <PrevisionePartenza>false</PrevisionePartenza>
+    <OraArrivo>05:37:10</OraArrivo>
+    <PrevisioneArrivo>18'</PrevisioneArrivo>
+    <NumeroSociale>09301</NumeroSociale>
+    <ConteggioPasseggeri>-1</ConteggioPasseggeri>
+    <AutobusPieno>false</AutobusPieno>
+  </Previsione>
+</ArrayOfPrevisione>

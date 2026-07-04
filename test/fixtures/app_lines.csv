@@ -1,0 +1,234 @@
+001-00;1;Caricamento (Ponente);Via Camozzini (Voltri);1;
+003-00;3;Staz. Principe;Via Soliman (Sestri);1;
+005-03;5/;Erzelli (Polo tecnologico);Via Menotti (Sestri);1;
+006-00;6;P.zza Savio (Cornigliano FS);Erzelli (Polo tecnologico);1;
+007-00;7;Fanti d'Italia (Staz. Marittima);Via Gallino (PonteX);1;
+008-00;8;Via Avio (Sampierdarena);Via Morasso (Bolzaneto);1;
+008-02;8/;Via Avio (Sampierdarena);P.za Pallavicini (Rivarolo);1;
+009-00;9;Caricamento (Ponente);Via Gallino (PonteX);1;
+010-00;10;P.le Kennedy (Fiera);Brignole (Transito Levante);1;
+013-00;13;Pian Martello (Prato);Via Turati (Caricamento);1;
+014-00;14;Pian Martello (Prato);V.le Thaon di Revel (Staz.Brignole);1;
+014-01;14/;L.go Boccardo (Molassana);V.le Thaon di Revel (Staz.Brignole);1;
+015-00;15;Via Gianelli (Quinto);P.za Verdi (Staz. Brignole);1;
+016-00;16;Quarto (Autostrada);Via Fiume (Staz.Brignole);1;
+017-01;17/;Via del Commercio (Nervi);Via Ceccardi;1;
+018-00;18;Via Mosso (Pronto Soccorso S.Martino);Via Degola (Sampierdarena);1;
+018-01;18/;Ospedale S.Martino;Via Degola (Sampierdarena);1;
+020-00;20;Via Rimassa (Foce);P.za V.Veneto (Sampierdarena);1;
+020-03;20/;Via Rimassa (Foce);Via di Francia (WTC);1;
+020-25;20/;Via Cantore (Sampierdarena);Via Rimassa (Foce);1;
+031-00;31;Via V Maggio (Osp. Gaslini);P.za Verdi (Staz.Brignole);1;
+031-01;31/;Via De Gaspari (Boccadasse);P.za Verdi (Staz.Brignole);1;
+032-00;32;P.za Caricamento (Ponente);Largo S.F. da Paola;1;
+034-00;34;P.le Resasco (Staglieno);Staz. Principe;1;
+035-00;35;Via Vannucci;Largo S.F.da Paola;1;
+035-01;35/;Via Vannucci;Via Vesuvio;1;
+035-03;35/;Via Vannucci;Via Dante (De Ferrari);1;
+036-00;36;P.za Merani(Albaro);Via Fanti d'Italia (Staz. Marittima);1;
+037-00;37;Via dei Platani;Via Dante (De Ferrari);1;
+038-00;38;Staz. Principe;Via Bianco (Granarolo);1;
+039-00;39;P.za Verdi (Staz. Brignole);Via Vesuvio (Oregina);1;
+040-00;40;P.za Verdi (Staz. Brignole);Via Costanzi (Righi);1;
+042-00;42;Via Isonzo (Sturla);Via Dante (De Ferrari);1;
+043-00;43;Ospedale S.Martino;P.za Verdi (Staz. Brignole);1;
+044-00;44;P.za Rotonda (Borgoratti);Via Dante (De Ferrari);1;
+045-00;45;Via V Maggio(Osp. Gaslini);V.le Thaon di Revel (Staz. Brignole);1;
+046-00;46;Via Donghi (S.Fruttuoso);Via XX Settembre (De Ferrari);1;
+047-00;47;Via Pinetti (Quezzi);Staz.Brignole (Transito Levante);1;
+048-00;48;L.go Boccardo(Molassana);Via Mosso(Pronto Soccorso S.Martino);1;
+049-00;49;Via delle Ginestre(Staglieno);P.za Verdi (Staz.Brignole);1;
+051-00;51;Via Biancheri (Sestri);Via Rollino;1;
+052-00;52;Via Biancheri (Sestri);Cimitero Sestri;1;
+053-00;53;P.za Pallavicini (Rivarolo);Via Travi (Sestri);1;
+054-00;54;Staz. Principe;Via del Lagaccio;1;
+057-00;57;Via Rossini (Rivarolo);P.za Garbo (Chiesa);1;
+057-01;57/;Via Rossini (Rivarolo);P.za Garbo (Chiesa);1;Transita per Cimitero Rivarolo
+059-00;59;Via dei Landi(Sampierdarena);Belvedere;1;
+062-00;62;Via Avio (Sampierdarena);Testa di cavallo;1;
+063-00;63;Via Avio (Sampierdarena);Via Anfossi (Pontedecimo);1;
+063-01;63/;Via Avio(Sampierdarena);Via Anfossi(Pontedecimo);1;Transita per Centro Artigiani
+064-00;64;P.za Manin;Belvedere Da Passano(Oregina);1;
+064-01;64/;P.za Manin;Righi (Funicolare);1;
+065-00;65;S.Cipriano;Cesino;1;
+066-00;66;Via Milano (Dinegro);Sampierdarena(Montano);1;
+067-00;67;Via Berghini (Camaldoli);P.za Martinez (S.Fruttuoso);1;
+071-00;71;P.za Rapisardi (Pegli);S.Carlo di Cese;1;
+071-01;71/;P.za Ponchielli (Pegli FS);S.Carlo di Cese;1;
+074-00;74;Bolzaneto - Via Custo;Murta;1;
+082-00;82;Chiesa di Quezzi;V.le Thaon di Revel (Staz.Brignole);1;
+084-00;84;Via Amarena (Marassi);P.za Verdi (Staz.Brignole);1;
+084-01;84/;P.za Solari(S.Fruttuoso);P.za Verdi (Staz.Brignole);1;
+085-00;85;Bavari;P.za Verdi (Staz.Brignole);1;
+086-00;86;S.Desiderio;V.le Thaon di Revel (Staz. Brignole);1;
+087-00;87;Apparizione;V.le Thaon di Revel (Staz. Brignole);1;
+088-00;88;S.Desiderio;Apparizione;1;
+089-00;89;Via Giovanni XXIII (S.Fruttuoso);P.za Martinez(S.Fruttuoso);1;
+093-00;93;P.za Ponchielli (Pegli FS);Via Vespucci;1;
+094-00;94;Pra' (Nuova stazione FS);Via Stassano;1;
+096-00;96;Via Verità (Voltri);Crevari;1;
+097-00;97;Via Verità (Voltri);Fiorino;1;
+097-01;97/;Via Verità (Voltri);Fabbriche;1;
+101-00;101;Via Don Verità (Voltri);Acquasanta FS;1;
+101-01;101/;Via Don Verità (Voltri);Acquasanta Santuario;1;
+128-00;128;Erzelli (Polo tecnologico);P.za di Vittorio (Sestri);1;
+151-00;151;Via Biancheri (Sestri);V.le Villa Gavotti (Sestri);1;
+158-00;158;P.za Consigliere (Chiesa della Costa);P.za Baracca (Sestri);1;
+159-00;159;P.za Consigliere(Chiesa della Costa);P.za Baracca(Sestri);1;
+160-01;160/;Via Rolla;Via dei Sessanta;1;
+160-02;160/;Via dei Sessanta;Via Dufour;1;
+165-00;165;Via Fanti (Sampierdarena);P.za Montano (Sampierdarena);1;
+170-00;170;P.za Virgo Potens;Via Travi (Sestri);1;
+172-00;172;Panigaro;P.za Baracca (Sestri);1;
+188-00;188;Pra' (Nuova Stazione FS);Via Pavese (Pra');1;
+189-00;189;P.za Ponchielli (Pegli FS);Via Salgari (Pegli);1;
+189-03;189/;P.za Ponchielli (Pegli FS);Via Salgari (Pegli);1;Transita per Via Lorenzini
+189-04;189/;Pegli (Via Pavia);Via Salgari (Pegli);1;
+189-05;189/;Pegli (Via Pavia);Via Salgari (Pegli);1;
+189-06;189/;Pegli (Via Pavia);Via Salgari (Pegli);1;Transita per Via Lorenzini
+189-07;189/;Pegli (Via Pavia);Via Salgari (Pegli);1;Transita per Via Lorenzini
+190-00;190;P.za Ponchielli (Pegli FS);Via Laviosa (Pegli);1;
+192-00;192;Via 2 Dicembre (Prà);Voltri FS;1;Transita per Via Salvemini
+193-00;193;Via Montanella (Pra);Via Don.G.Verità (Voltri);1;
+199-00;199;Via 2 Dicembre 1944;Via Verità (Voltri);1;
+270-00;270;Via Canepari (Rivarolo);Via Reta (Bolzaneto);1;
+270-03;270/;Via Brin(Capolinea Metrò Rivarolo);Via Linneo(Chiesa S.G.Battista);1;
+272-00;272;P.za Pallavicini (Rivarolo);Via Cambiaso (Begato);1;
+272-01;272/;P.za Pallavicini (Rivarolo);Via Brocchi;1;
+273-00;273;P.za Pallavicini (Rivarolo);Via Tofane (Rivarolo);1;
+275-00;275;Via Bolzaneto 4 (Via Pastorino);Campora;1;
+275-01;275/;Via Bolzaneto 4 (Via Pastorino);Chiesa Geminiano;1;
+276-00;276;Via Bolzaneto 4 (Via Pastorino);S.Biagio;1;Servizio attivo solo nei festivi
+277-00;277;Via Bolzaneto 4 - Pastorino;Cremeno;1;Servizio attivo solo nei festivi
+340-00;340;Via Asilo Garbarino;Dinegro;1;
+355-00;355;P.le Pestarino;Piani di Fregoso;1;
+355-02;355/;Granarolo;Piani di Fregoso;1;
+355-03;355/;P.le Pestarino;Via Bianco;1;
+355-04;355/;P.le Pestarino;Granarolo;1;
+356-00;356;Via Fea(Marassi);V.le Thaon di Revel (Staz. Brignole);1;
+374-00;374;Via Cancelliere (Castelletto);Spianata Castelletto;1;
+375-00;375;Spianata Castelletto;Via D.Chiodo;1;
+377-00;377;Spianata Castelletto;Via Ausonia (Castelletto);1;
+381-00;381;Via Biga (Marassi);Via Monticelli (Marassi);1;
+383-00;383;Via Robino (Marassi);Via Monticelli (Marassi);1;
+385-00;385;Via Torti (S.Fruttuoso);Via Imperiale (S.Fruttuoso);1;
+451-00;451;Via Bobbio(Scuola Da Passano);Via Tortona (Staglieno);1;
+451-01;451/;P.za Garrassini (Staglieno);Via Tortona (Staglieno);1;
+451-03;451/;P.le Resasco (Staglieno);Via Tortona (Staglieno);1;
+470-00;470;S.Martino di Struppa;Sant'Eusebio;1;Servizio attivo solo nei festivi
+474-00;474;P.le Bligny;Preli;1;
+477-00;477;Cartagenova;L.go Boccardo (Molassana);1;
+477-01;477/;Cartagenova;L.go Boccardo (Molassana);1;
+477-04;477/;Cartagenova;L.go Boccardo (Molassana);1;
+479-00;479;S.Martino di Struppa;L.go Boccardo (Molassana);1;
+480-00;480;Sant'Eusebio;V.le Thaon di Revel (Staz. Brignole);1;
+481-00;481;Via Geirato (Molassana);Via 8 Marzo (Torrazza);1;
+482-00;482;Sant'Eusebio;V.le Thaon di Revel (Staz. Brignole);1;
+512-00;512;Via degli Iris(Quarto);P.za Ragazzi del 99(Via Isonzo);1;
+512-01;512/;Via degli Iris(Quarto);P.za Ragazzi del 99(Via Isonzo);1;
+513-00;513;Via Nenni(Quarto);P.za Ragazzi del 99 (Via Isonzo);1;
+515-00;515;Viale Franchini (Nervi);P.za Rusca (Quinto);1;Corse del martedi' mattina esercite con linea 515/
+515-01;515/;Nervi (Viale Franchini);Nervi (Largo Edilio Pesce);1;Linea attiva solo il martedi'
+515-02;515/;Viale Franchini (Nervi);P.za Tommaseo;1;
+516-00;516;S.Ilario;Largo Edilio Pesce (Nervi);1;
+517-00;517;Via Somma (Capolungo);Largo Edilio Pesce (Nervi);1;
+518-00;518;Padiglione Maragliano;Ingresso Principale;1;
+518-01;518/;Ingresso Principale;Ingresso Principale;1;Transita per Pad.Dermatologia Sociale
+518-10;518/;Ingresso Principale;Ingresso Principale;1;Transita per Pad.Dermatologia Sociale
+584-00;584;Bavari;Via V Maggio (Osp. Gaslini);1;
+584-01;584/;Via Cadighiara(Borgoratti);Via V Maggio (Osp. Gaslini);1;
+603-00;603;Chiesa di Quezzi;P.za Verdi (Staz.Brignole);1;
+604-00;604;Camaldoli;P.za Verdi (Staz.Brignole);1;
+606-00;606;Via De Gaspari (Boccadasse);Staz. Principe;1;
+606-01;606/;Via De Gaspari;Staz. Principe(VALIDE VENERDI,SABATO E FESTIVI);1;
+606-10;606/;Via De Gaspari;Staz. Principe(VALIDE VENERDI,SABATO E FESTIVI);1;
+607-00;607;Via Gianelli (Quinto);P.za Verdi (Staz. Brignole);1;
+607-04;607/;Via De Gaspari (Boccadasse);P.za Verdi (Staz.Brignole);1;Linea attiva solo il venerdi' e il sabato
+607-05;607/;Via Cinque Maggio (Osp. Gaslini);P.za Verdi (Staz.Brignole);1;
+608-00;608;Via De Gaspari;-P.za Verdi (VALIDE VENERDI,SABATO,FESTIVI);1;Linea attiva venerdi',sabato e domenica
+617-00;617;Nervi (Via del Commercio);P.za Verdi (Brignole);1;Transita per Via Dante
+618-00;618;Via Mosso (P.S. S.Martino);Via Degola (Sampierdarena);1;
+634-00;634;P.le Resasco (Staglieno);Staz. Principe;1;
+635-00;635;Via Vannucci;P.za Caricamento (Ponente);1;
+640-00;640;P.za Verdi (Staz. Brignole);Via Costanzi (Righi);1;
+641-00;641;Via V Maggio (Osp. Gaslini);Staz. Principe;1;
+649-00;649;Via delle Ginestre (Staglieno);P.za Verdi (Staz.Brignole);1;
+653-00;653;P.za Pallavicini (Rivarolo);Via Travi (Sestri);1;
+656-00;656;Via Fea (Marassi);P.za Verdi (Staz.Brignole);1;
+660-00;660;Via Milano (Dinegro);Via Degola (Sampierdarena);1;
+663-00;663;Via Gallino (Pontedecimo);Via Degola (Sampierdarena);1;
+670-00;670;Via Canepari (Rivarolo);Via Reta (Bolzaneto);1;
+670-01;670/;Via Brin (Capolinea Metrò Rivarolo);Via Cechov (Parcheggio);1;
+680-00;680;Sant'Eusebio;P.za Verdi (Staz.Brignole);1;
+683-00;683;Via Robino (Marassi);P.za Verdi (Staz.Brignole);1;
+685-00;685;Bavari;P.za Verdi (Brignole);1;Transita per De Ferrari
+686-00;686;S.Desiderio;P.za Verdi (Brignole);1;Transita per De Ferrari
+687-00;687;Apparizione;P.za Verdi (Brignole);1;Transita per De Ferrari
+697-00;697;Via Don Verità (Voltri);Fiorino;1;
+699-00;699;Via 2 Dicembre 1944 (Prà);Via Don Verità (Voltri);1;
+AIR-00;AIR;Via Cibrario (Passerella FS);Aeroporto Arrivi;1;
+CS-00;CS;Ingresso Cimitero Staglieno;Campo delle rose;1;
+CST-00;CST;Salita del Prione;Caricamento (Ponente);1;
+F1-00;F1;Righi (Funicolare);P.za Bandiera;1;Transita per V.Costanzi - C.so Carbonara / Linea attiva soltanto in caso di fermo impianto: Funicolare Zecca - Righi
+F2-00;F2;V.Chiodo (S.Simone);P.za Bandiera;1;Transita per V.Piaggio - C.so Carbonara / Linea attiva soltanto in caso di fermo impianto: Funicolare Zecca - Righi
+F2-01;F2/;Righi (Funicolare);P.za Bandiera;1;Transita per Via Carso - P.za Manin / Linea attiva soltanto in caso di fermo impianto: Funicolare Zecca - Righi
+FGC-00;FGC;Casella (Paese);P.za Manin (Genova);7;
+FGC-01;FGC/;Casella (Paese);Vicomorasso;7;
+FGC-02;FGC/;Vicomorasso;P.za Manin (Genova);7;
+FGC-03;FGC/;Casella (Paese);Campi;7;
+FGC-04;FGC/;Campi;P.za Manin (Genova);7;
+FGC-10;FGC/;Casella (Paese);P.za Manin (Genova);7;
+FGR-00;FGR;Principe(Stazione Cremagliera);Granarolo;3;
+FRI-00;FRI;L.go Zecca;Righi;3;
+G1-00;G1;P.le Pestarino;Granarolo;1;Linea attiva soltanto in caso di fermo impianto: Ferrovia Principe-Granarolo
+G1-03;G1/;Via Fanti d'Italia (Staz. Marittima);Granarolo;1;Linea attiva soltanto in caso di fermo impianto: Ferrovia Principe-Granarolo
+GA-00;GA;Via Biancheri (Sestri);Santuario N.S. del Gazzo;1;
+HS-00;HS;Via Cantore(altezza Asc. Villa Scassi);C.so Scassi(Ospedale);1;Linea attiva soltanto in caso di fermo impianto: Ascensore Villa Scassi
+I01-00;I01;Pra (Stazione FS);Via Sup. della Torrazza \ 27-27A;4;
+I02-00;I02;Via Calda / Retro civ. 43;Via Travi 4A (Sestri);4;
+I03-00;I03;Via Canepari 53;Via S. Piombelli f. 28;4;
+I04-00;I04;Via Mansueto 55;Via Brin (Staz. Metro);4;
+I06-00;I06;P.za Masnata;P.za Masnata;4;Transita per Via del Campasso
+I09-00;I09;V.Linneo/Costa di Begato;V.Linneo/Costa di Begato;4;Transita per V.Fermi
+I10-00;I10;V.Buozzi(Staz.Metrò);V.Buozzi(Staz.Metrò);4;Transita per V.Ceppi
+I13-00;I13;Via Della Gava;P.le Resasco (Cimitero Ingr. Princ.);4;
+I14-00;I14;S.ta S.Antonino (P.le Chiesa);P.le Resasco (Cimitero Ingr. Princ.);4;
+I15-00;I15;Doria;Sant'Eusebio;4;
+I15-01;I15/;Doria;Sant'Eusebio;4;
+I17-00;I17;Via Minoretti (Chiesa);Via Borgoratti 41;4;
+I19-00;I19;Via Copernico 11;Via Borgoratti F.79;4;
+I21-00;I21;V.De Vincenzi;V.De Vincenzi;4;Transita per V. Spalato - V.Merello
+I21-01;I21/;Via De Vincenzi;Via Olivo(Cimitero);4;
+I22-00;I22;Via Edera 19;Largo Merlo;4;
+I24-00;I24;Via Puccini (Stazione FS Sestri P.);Marina Aeroporto;4;
+I25-00;I25;P.za Garrassini;Via Monterosa;4;
+I27-00;I27;Aggio;Incrocio V.Struppa V.Buscaglia (Doria);4;
+KA-00;KA;P.le Kennedy (Fiera);Staz. Principe;1;
+MM-00;MM;MM Brin;MM Brignole;2;
+N1-00;N1;Pian Martello (Prato);Via Gallino (Pontedecimo);1;
+N2-00;N2;Via del Commercio (Nervi);Via Camozzini (Voltri);1;
+NAL-00;NAL;Via del Lagaccio;Via Napoli;1;
+NSM-00;NSM;Via Fiume (Brignole FS);P.za Pallavicini (Rivarolo);1;
+NVB-00;NVB;Porto Antico;Pegli (Molo Archetti);6;
+T05-00;T05;P.za Pallavicini(1^Arc.Viad. F.S.);V.dei Rebucchi(Incr.S.ta Pianego);8;
+T07-00;T07;Via Brin(Staz.Metrò);Via Brin(Staz.Metrò);8;Transita per V.le Buonarroti
+T12-00;T12;P.za Verdi (Brignole FS);Via Caffaro;8;
+T15-01;T15/;Sant'Eusebio;Costa di S.Eusebio;8;
+T16-00;T16;P.za Grosso 15 (S.Desiderio);Località Premanico;8;
+T165-00;T165;Via Fanti (Sampierdarena);P.za Montano (Sampierdarena);8;
+T18-00;T18;P.za Don Canepa(Cimitero Apparizione);V.Monte Fasce 72(Area Manovra);8;
+T18-01;T18/;Via Lanfranco 70;P.za Don Canepa (Cimitero Apparizione);8;
+T23-00;T23;ViaMura Angeli;Belvedere;8;Transita per transito Granarolo (+13')
+T28-00;T28;San Rocco (Sant'Ilario);P.za Pittaluga (Nervi);8;
+T30-00;T30;P.za Grosso (S.Desiderio);Cimitero San Desiderio;8;
+T31-00;T31;Via Don Verità (Voltri);Sambuco (Chiesa);8;
+T32-00;T32;Via Monte Sei Busi;Via Ortigara;8;
+T374-00;T374;Via Cancelliere (Castelletto);Spianata Castelletto;8;
+T375-00;T375;Spianata Castelletto;Via D.Chiodo (Castelletto);8;
+T377-00;T377;Spianata Castelletto;Via Ausonia (Castelletto);8;
+T385-00;T385;Via Torti (S.Fruttuoso);Via Imperiale (S.Fruttuoso);8;
+T516-00;T516;S.Ilario;Largo Edilio Pesce (Nervi);8;
+T89-00;T89;Via Giovanni XXIII (S.Fruttuoso);P.za Martinez(S.Fruttuoso);8;
+TOR-00;TOR;P.le Kennedy (Fiera);Via Turati (Caricamento);1;
+VLB-00;VLB;P.za Verdi (Brignole);Aeroporto Arrivi;5;
+VLB-10;VLB/;P.za Acquaverde (Principe);Aeroporto Arrivi;5;

@@ -3,3 +3,6 @@ dist/
 .astro/
 *.log
 .setting/
+
+.wrangler/
+public/data/
