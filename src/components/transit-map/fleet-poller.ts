@@ -45,7 +45,10 @@ export const startFleetPoller = (): void => {
     appState.lastLiveUpdate.set(Date.now());
   };
   const tick = (): void =>
-    branch(state.running || state.plan.length === 0)(
+    // Hidden tabs skip the sweep entirely — a backgrounded client
+    // must not burn the worker-invocation quota (rows expire by TTL
+    // and refill on the first visible tick).
+    branch(state.running || state.plan.length === 0 || document.hidden)(
       () => undefined,
       () => {
         state.running = true;

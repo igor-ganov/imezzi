@@ -6,13 +6,36 @@ const NEVER = /$^/;
 const patternAt = (index: number): RegExp => routes[index]?.pattern ?? NEVER;
 
 const arrivals = patternAt(0);
-const staticData = patternAt(1);
-const geometry = patternAt(2);
-const trains = patternAt(3);
+const batch = patternAt(1);
+const staticData = patternAt(2);
+const geometry = patternAt(3);
+const trains = patternAt(4);
 
 describe('routes table', () => {
-  test('declares the four API routes', () => {
-    expect(routes.length).toBe(4);
+  test('declares the five API routes', () => {
+    expect(routes.length).toBe(5);
+  });
+});
+
+describe('arrivals batch route', () => {
+  test('matches 1..40 comma-separated numeric ids', () => {
+    expect(batch.test('/api/arrivals-batch/0001')).toBe(true);
+    expect(batch.test('/api/arrivals-batch/1,2,3')).toBe(true);
+    const forty = Array.from({ length: 40 }, (_, i) => `${i + 1}`).join(',');
+    expect(batch.test(`/api/arrivals-batch/${forty}`)).toBe(true);
+  });
+
+  test('rejects over-long lists and malformed ids', () => {
+    const fortyOne = Array.from({ length: 41 }, (_, i) => `${i + 1}`).join(',');
+    expect(batch.test(`/api/arrivals-batch/${fortyOne}`)).toBe(false);
+    expect(batch.test('/api/arrivals-batch/')).toBe(false);
+    expect(batch.test('/api/arrivals-batch/1,,2')).toBe(false);
+    expect(batch.test('/api/arrivals-batch/1,abc')).toBe(false);
+    expect(batch.test('/api/arrivals-batch/1234567')).toBe(false);
+  });
+
+  test('captures the whole id list', () => {
+    expect(batch.exec('/api/arrivals-batch/1,2')?.[1]).toBe('1,2');
   });
 });
 

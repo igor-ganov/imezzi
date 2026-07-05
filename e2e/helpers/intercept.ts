@@ -31,6 +31,20 @@ export const intercept = async (page: Page): Promise<void> => {
     '**/api/arrivals/**',
     answer({ json: fixture('arrivals.json') }),
   );
+  await page.route('**/api/arrivals-batch/**', (route) => {
+    const ids = (
+      new URL(route.request().url()).pathname.split('/').pop() ?? ''
+    )
+      .split(',')
+      .filter(Boolean);
+    return route
+      .fulfill({
+        json: Object.fromEntries(
+          ids.map((id) => [id, fixture('arrivals.json')]),
+        ),
+      })
+      .catch(() => undefined);
+  });
   await page.route('**/data/schedule.json', answer({ json: makeSchedule() }));
   await page.route(
     '**/data/bus-offsets.json',

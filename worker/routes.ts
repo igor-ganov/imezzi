@@ -1,3 +1,4 @@
+import { arrivalsBatchHandler } from './handlers/arrivals-batch.ts';
 import { arrivalsHandler } from './handlers/arrivals.ts';
 import { geometryHandler } from './handlers/geometry.ts';
 import { staticDataHandler } from './handlers/static-data.ts';
@@ -11,6 +12,10 @@ export interface Route {
 /** API route table (live-map design §1). First match wins. */
 export const routes: readonly Route[] = [
   { pattern: /^\/api\/arrivals\/(\d{1,6})$/, handler: arrivalsHandler },
+  {
+    pattern: /^\/api\/arrivals-batch\/(\d{1,6}(?:,\d{1,6}){0,39})$/,
+    handler: arrivalsBatchHandler,
+  },
   { pattern: /^\/api\/(stops|lines|line-stops)$/, handler: staticDataHandler },
   {
     pattern: /^\/api\/geometry\/([A-Za-z0-9-]{1,8})\/([12])$/,
