@@ -1,93 +1,93 @@
 import { describe, expect, test } from 'bun:test';
-import { smoothStep, type MotionPoint } from '../../src/lib/motion/smooth-step.ts';
+import {
+  motionStep,
+  type FleetMotion,
+  type MotionTarget,
+} from '../../src/lib/fleet/fleet-motion.ts';
 import { staleFactor } from '../../src/lib/motion/stale-factor.ts';
-import type { VehicleView } from '../../src/lib/vehicles/types.ts';
 
-const target = (over: Partial<VehicleView>): VehicleView => ({
+const target = (over: Partial<MotionTarget>): MotionTarget => ({
   id: 'bus:09001',
-  label: '1',
-  mode: 'bus',
-  lineKey: '1',
-  lon: 8.94,
-  lat: 44.41,
-  approximated: false,
+  templateKey: '1#0',
+  targetMoment: 300,
   ageSeconds: 0,
   ...over,
 });
 
-const at = (lon: number, lat: number): ReadonlyMap<string, MotionPoint> =>
-  new Map([['bus:09001', { lon, lat }]]);
+const at = (moment: number, templateKey = '1#0'): FleetMotion =>
+  new Map([['bus:09001', { templateKey, moment }]]);
 
 describe('staleFactor', () => {
-  test('fresh data animates fully', () => {
+  test('fresh full, aging linear, stale frozen', () => {
     expect(staleFactor(0)).toBe(1);
     expect(staleFactor(45)).toBe(1);
-  });
-
-  test('aging data decelerates linearly', () => {
     expect(staleFactor(82.5)).toBeCloseTo(0.5);
-  });
-
-  test('stale data freezes entirely', () => {
     expect(staleFactor(120)).toBe(0);
-    expect(staleFactor(999)).toBe(0);
   });
 });
 
-describe('smoothStep', () => {
-  test('new ids appear directly at their target', () => {
-    const next = smoothStep(new Map(), [target({})], 0.016);
-    expect(next.get('bus:09001')).toEqual({ lon: 8.94, lat: 44.41 });
+describe('motionStep — timeline-space chase', () => {
+  test('new ids adopt their target moment directly', () => {
+    const next = motionStep(new Map(), [target({})], 0.016);
+    expect(next.get('bus:09001')?.moment).toBe(300);
   });
 
   test('ids missing from the targets are dropped', () => {
-    const next = smoothStep(at(8.94, 44.41), [], 0.016);
-    expect(next.size).toBe(0);
+    expect(motionStep(at(100), [], 0.016).size).toBe(0);
   });
 
-  test('glides toward the target without overshooting', () => {
-    const start = at(8.94, 44.41);
-    const goal = target({ lat: 44.412 });
-    const one = smoothStep(start, [goal], 0.5);
-    const lat1 = one.get('bus:09001')?.lat ?? 0;
-    expect(lat1).toBeGreaterThan(44.41);
-    expect(lat1).toBeLessThan(44.412);
-    const two = smoothStep(one, [goal], 0.5);
-    const lat2 = two.get('bus:09001')?.lat ?? 0;
-    expect(lat2).toBeGreaterThan(lat1);
-    expect(lat2).toBeLessThan(44.412);
+  test('the displayed moment NEVER moves backward', () => {
+    // Target regressed below the displayed moment (prediction noise):
+    // the marker holds instead of driving back down the street.
+    const next = motionStep(at(200), [target({ targetMoment: 120 })], 0.5);
+    expect(next.get('bus:09001')?.moment).toBe(200);
   });
 
-  test('repeated frames converge on the target (steady motion)', () => {
-    const goal = target({ lat: 44.412 });
-    const final = Array.from({ length: 40 }).reduce<
-      ReadonlyMap<string, MotionPoint>
-    >((state) => smoothStep(state, [goal], 0.25), at(8.94, 44.41));
-    expect(final.get('bus:09001')?.lat).toBeCloseTo(44.412, 4);
+  test('catch-up is capped — a big gap cannot be crossed in a frame', () => {
+    // 900 s behind; one 0.1 s frame may advance at most 6×dt = 0.6 s
+    // of timeline. Kilometres-in-a-blink is impossible by contract.
+    const next = motionStep(at(0), [target({ targetMoment: 900 })], 0.1);
+    expect(next.get('bus:09001')?.moment ?? 0).toBeLessThanOrEqual(0.601);
+    expect(next.get('bus:09001')?.moment ?? 0).toBeGreaterThan(0);
   });
 
-  test('stale targets freeze the displayed point', () => {
-    const goal = target({ lat: 44.412, ageSeconds: 300 });
-    const next = smoothStep(at(8.94, 44.41), [goal], 0.5);
-    expect(next.get('bus:09001')?.lat).toBeCloseTo(44.41, 10);
+  test('repeated frames converge on the target', () => {
+    const goal = target({ targetMoment: 60 });
+    const final = Array.from({ length: 400 }).reduce<FleetMotion>(
+      (state) => motionStep(state, [goal], 0.25),
+      at(0),
+    );
+    expect(final.get('bus:09001')?.moment ?? 0).toBeCloseTo(60, 0);
   });
 
-  test('aging targets move slower than fresh ones', () => {
-    const fresh = smoothStep(at(8.94, 44.41), [target({ lat: 44.412 })], 0.25);
-    const aging = smoothStep(
-      at(8.94, 44.41),
-      [target({ lat: 44.412, ageSeconds: 90 })],
+  test('stale targets freeze the displayed moment', () => {
+    const next = motionStep(
+      at(100),
+      [target({ targetMoment: 200, ageSeconds: 300 })],
+      0.5,
+    );
+    expect(next.get('bus:09001')?.moment).toBe(100);
+  });
+
+  test('aging targets chase slower than fresh ones', () => {
+    const fresh = motionStep(at(100), [target({ targetMoment: 130 })], 0.25);
+    const aging = motionStep(
+      at(100),
+      [target({ targetMoment: 130, ageSeconds: 90 })],
       0.25,
     );
-    const freshDelta = (fresh.get('bus:09001')?.lat ?? 0) - 44.41;
-    const agingDelta = (aging.get('bus:09001')?.lat ?? 0) - 44.41;
-    expect(agingDelta).toBeGreaterThan(0);
-    expect(agingDelta).toBeLessThan(freshDelta);
+    const freshStep = (fresh.get('bus:09001')?.moment ?? 0) - 100;
+    const agingStep = (aging.get('bus:09001')?.moment ?? 0) - 100;
+    expect(agingStep).toBeGreaterThan(0);
+    expect(agingStep).toBeLessThan(freshStep);
   });
 
-  test('a far-away target snaps instead of chasing across town', () => {
-    const goal = target({ lat: 44.5 });
-    const next = smoothStep(at(8.94, 44.41), [goal], 0.016);
-    expect(next.get('bus:09001')?.lat).toBe(44.5);
+  test('a direction change adopts the new moment immediately', () => {
+    const next = motionStep(
+      at(280, '1#0'),
+      [target({ templateKey: '1#1', targetMoment: 15 })],
+      0.016,
+    );
+    expect(next.get('bus:09001')).toEqual({ templateKey: '1#1', moment: 15 });
   });
 });

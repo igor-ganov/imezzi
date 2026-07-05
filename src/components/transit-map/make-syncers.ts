@@ -4,12 +4,12 @@ import { toStopsGeojson } from '../../lib/map/to-stops-geojson.ts';
 import { toVehiclesGeojson } from '../../lib/map/to-vehicles-geojson.ts';
 import { appState } from '../../lib/store/app-state.ts';
 import { applySelection } from './apply-selection.ts';
+import { fleetFrame } from './fleet-frame.ts';
 import type { MapData } from './map-data.ts';
 import { markStopsRendered } from './mark-stops-rendered.ts';
 import { makeMotionLoop } from './motion-loop.ts';
 import type { makeStateMarker } from './state-marker.ts';
 import { setSourceData } from './set-source-data.ts';
-import { vehiclesNow } from './vehicles-now.ts';
 
 type ForData = (fn: (data: MapData) => void) => void;
 
@@ -19,8 +19,9 @@ export const makeSyncers = (
   forData: ForData,
   mark: ReturnType<typeof makeStateMarker>,
 ) => {
-  const motion = makeMotionLoop((views) =>
-    setSourceData(map, 'vehicles', toVehiclesGeojson(views)),
+  const motion = makeMotionLoop(
+    (views) => setSourceData(map, 'vehicles', toVehiclesGeojson(views)),
+    (meters) => mark.maxStep(meters),
   );
   motion.start();
   return {
@@ -33,12 +34,13 @@ export const makeSyncers = (
       }),
     syncVehicles: (): void =>
       forData((data) => {
-        const views = vehiclesNow(data);
-        motion.setTargets(views);
-        mark.vehicles(views.length);
+        const frame = fleetFrame(data);
+        motion.setFrame(frame);
+        mark.vehicles(frame.schedule.length + frame.targets.length);
         mark.fleet(
           uniqueFleetCount(appState.fleetSightings.get()),
-          views.filter((view) => view.id.startsWith('bus:')).length,
+          frame.freshCount,
+          frame.targets.length - frame.freshCount,
         );
       }),
     syncSelection: (): void =>

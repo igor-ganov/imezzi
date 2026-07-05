@@ -19,9 +19,14 @@ export const makeStateMarker = (container: HTMLElement) => {
       host?.setAttribute('data-vehicles', `${count}`);
     },
     /** The count invariant: unique vehicles in data vs markers drawn. */
-    fleet: (computed: number, rendered: number): void => {
+    fleet: (computed: number, rendered: number, ghosts: number): void => {
       host?.setAttribute('data-fleet-computed', `${computed}`);
       host?.setAttribute('data-live-rendered', `${rendered}`);
+      host?.setAttribute('data-ghosts', `${ghosts}`);
+    },
+    /** Worst per-frame glide step over the last seconds, metres. */
+    maxStep: (meters: number): void => {
+      host?.setAttribute('data-max-step-m', `${Math.round(meters)}`);
     },
     routeLegs: (count: number): void => {
       host?.setAttribute('data-route-legs', `${count}`);

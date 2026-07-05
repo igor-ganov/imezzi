@@ -9,6 +9,8 @@ import { momentOf } from '../../src/lib/fleet/moment-of.ts';
 import { pickTemplate } from '../../src/lib/fleet/pick-template.ts';
 import { placeAtMoment } from '../../src/lib/fleet/place-at-moment.ts';
 import type { BusOffsets, FleetSighting } from '../../src/lib/fleet/types.ts';
+import { hotStops } from '../../src/lib/fleet/hot-stops.ts';
+import { targetView } from '../../src/lib/fleet/target-view.ts';
 import { uniqueFleetCount } from '../../src/lib/fleet/unique-fleet-count.ts';
 import { bearingOf } from '../../src/lib/geo/bearing-of.ts';
 
@@ -160,6 +162,9 @@ const sighting = (
 
 const offsets: BusOffsets = { '1': [template] };
 
+const viewsOf = (result: ReturnType<typeof inferFleet>) =>
+  result.targets.map((entry) => targetView(entry, coords, entry.targetMoment));
+
 describe('inferFleet — the count invariant', () => {
   test('every unique NumeroSociale yields exactly one marker', () => {
     const sightings = [
@@ -168,18 +173,20 @@ describe('inferFleet — the count invariant', () => {
       sighting('C', { vehicle: '09002', countdown: "1'" }),
       sighting('A', { vehicle: '09003', line: '999', destination: 'BOH' }),
     ];
-    const { views } = inferFleet(sightings, offsets, coords, 1000);
+    const views = viewsOf(inferFleet(sightings, offsets, coords, 1000));
     expect(views.length).toBe(3);
     expect(views.length).toBe(uniqueFleetCount(sightings));
     expect(new Set(views.map((view) => view.id)).size).toBe(3);
   });
 
   test('vehicles without a usable template anchor at their stop', () => {
-    const { views } = inferFleet(
-      [sighting('B', { vehicle: '09009', line: '999' })],
-      offsets,
-      coords,
-      1000,
+    const views = viewsOf(
+      inferFleet(
+        [sighting('B', { vehicle: '09009', line: '999' })],
+        offsets,
+        coords,
+        1000,
+      ),
     );
     expect(views.length).toBe(1);
     expect(views[0]?.lat).toBeCloseTo(44.1, 5);
@@ -191,20 +198,56 @@ describe('inferFleet — the count invariant', () => {
       sighting('B', { theoretical: true, vehicle: '09001' }),
       sighting('B', { vehicle: '' }),
     ];
-    expect(inferFleet(sightings, offsets, coords, 1000).views).toEqual([]);
+    expect(inferFleet(sightings, offsets, coords, 1000).targets).toEqual([]);
     expect(uniqueFleetCount(sightings)).toBe(0);
   });
 
   test('positions advance as the countdown melts', () => {
     const sightings = [sighting('C', { countdown: "3'" })];
-    const early = inferFleet(sightings, offsets, coords, 1000).views;
-    const later = inferFleet(sightings, offsets, coords, 1090).views;
+    const early = viewsOf(inferFleet(sightings, offsets, coords, 1000));
+    const later = viewsOf(inferFleet(sightings, offsets, coords, 1090));
     expect((later[0]?.lat ?? 0) > (early[0]?.lat ?? 1)).toBe(true);
   });
 
   test('bearing points along the travel direction', () => {
-    const { views } = inferFleet([sighting('C', { countdown: "2'" })], offsets, coords, 1000);
+    const views = viewsOf(inferFleet([sighting('C', { countdown: "2'" })], offsets, coords, 1000));
     expect(views[0]?.bearing).toBeCloseTo(0);
+  });
+});
+
+describe('inferFleet — no freeze at the sighted stop (regression)', () => {
+  test('a vehicle keeps moving past its stop at schedule speed', () => {
+    // Sighted 1' from B at t=1000. At t=1120 the countdown is −60:
+    // the bus PASSED B and must be en route to C — the old clamp
+    // parked it at B until the next sweep, then teleported it.
+    const result = inferFleet(
+      [sighting('B', { countdown: "1'" }, 1000)],
+      offsets,
+      coords,
+      1120,
+    );
+    const view = viewsOf(result)[0];
+    expect(view?.lat ?? 0).toBeGreaterThan(44.1);
+    expect(view?.lat ?? 0).toBeLessThan(44.2);
+  });
+
+  test('extrapolation clamps at the terminus', () => {
+    const result = inferFleet(
+      [sighting('B', { countdown: "1'" }, 1000)],
+      offsets,
+      coords,
+      1000 + 9999,
+    );
+    expect(viewsOf(result)[0]?.lat).toBeCloseTo(44.2, 5);
+  });
+
+  test('wrapped clock rows (already passed) are excluded everywhere', () => {
+    // Live probe caught this: 120 s → 86400 s on re-poll after the
+    // bus passed the stop. Such a row teleported the vehicle to the
+    // route start; it must count neither as data nor as a marker.
+    const wrapped = [sighting('B', { countdown: "1439'" }, 1000)];
+    expect(inferFleet(wrapped, offsets, coords, 1000).targets).toEqual([]);
+    expect(uniqueFleetCount(wrapped)).toBe(0);
   });
 });
 
@@ -219,7 +262,7 @@ describe('inferFleet — no backward motion (regression)', () => {
       coords,
       1000,
     );
-    const firstLat = first.views[0]?.lat ?? 0;
+    const firstLat = viewsOf(first)[0]?.lat ?? 0;
     const second = inferFleet(
       [sighting('C', { countdown: "4'" }, 1030)],
       offsets,
@@ -228,7 +271,7 @@ describe('inferFleet — no backward motion (regression)', () => {
       () => undefined,
       first.memory,
     );
-    expect(second.views[0]?.lat ?? 0).toBeGreaterThanOrEqual(firstLat);
+    expect(viewsOf(second)[0]?.lat ?? 0).toBeGreaterThanOrEqual(firstLat);
   });
 
   test('best-stop flapping between two sightings cannot regress', () => {
@@ -241,7 +284,7 @@ describe('inferFleet — no backward motion (regression)', () => {
       coords,
       1000,
     );
-    const firstLat = first.views[0]?.lat ?? 0;
+    const firstLat = viewsOf(first)[0]?.lat ?? 0;
     // 70 s later B's row is gone (bus passed); C alone now implies a
     // moment slightly before the held one — hold, don't move back.
     const second = inferFleet(
@@ -252,7 +295,7 @@ describe('inferFleet — no backward motion (regression)', () => {
       () => undefined,
       first.memory,
     );
-    expect(second.views[0]?.lat ?? 0).toBeGreaterThanOrEqual(firstLat);
+    expect(viewsOf(second)[0]?.lat ?? 0).toBeGreaterThanOrEqual(firstLat);
   });
 
   test('a very large regression on the same line starts a new trip', () => {
@@ -262,7 +305,7 @@ describe('inferFleet — no backward motion (regression)', () => {
       coords,
       1000,
     );
-    expect(atTerminus.views[0]?.lat).toBeCloseTo(44.2, 5);
+    expect(viewsOf(atTerminus)[0]?.lat).toBeCloseTo(44.2, 5);
     const nextTrip = inferFleet(
       [sighting('B', { countdown: "9'" }, 1900)],
       offsets,
@@ -273,7 +316,7 @@ describe('inferFleet — no backward motion (regression)', () => {
     );
     // raw moment = 120 - 540 → clamped 0 → a 300 s regression from
     // the terminus: accepted as the next departure, back at the start.
-    expect(nextTrip.views[0]?.lat).toBeCloseTo(44.0, 5);
+    expect(viewsOf(nextTrip)[0]?.lat).toBeCloseTo(44.0, 5);
   });
 });
 
@@ -308,12 +351,40 @@ describe('inferFleet — sticky direction (regression)', () => {
   });
 });
 
+describe('hotStops', () => {
+  test('yields each tracked vehicle`s next stop, deduped and capped', () => {
+    const result = inferFleet(
+      [
+        sighting('B', { vehicle: '09001', countdown: "1'" }),
+        sighting('B', { vehicle: '09002', countdown: "2'" }),
+      ],
+      offsets,
+      coords,
+      1000,
+    );
+    // Both vehicles are still before B (moments 60 and 0) — the next
+    // stop for each is B, deduped into one entry.
+    expect(hotStops(result.targets, 30)).toEqual(['B']);
+    expect(hotStops(result.targets, 0)).toEqual([]);
+  });
+
+  test('a vehicle at the terminus contributes nothing', () => {
+    const result = inferFleet(
+      [sighting('C', { countdown: "0'" })],
+      offsets,
+      coords,
+      1000,
+    );
+    expect(hotStops(result.targets, 30)).toEqual([]);
+  });
+});
+
 describe('effectiveCountdown', () => {
-  test('melts with elapsed time and clamps at zero', () => {
+  test('melts with elapsed time and goes negative past the stop', () => {
     const entry = sighting('B', { countdown: "2'" }, 1000);
     expect(effectiveCountdown(entry, 1000)).toBe(120);
     expect(effectiveCountdown(entry, 1060)).toBe(60);
-    expect(effectiveCountdown(entry, 2000)).toBe(0);
+    expect(effectiveCountdown(entry, 2000)).toBe(-880);
   });
 });
 

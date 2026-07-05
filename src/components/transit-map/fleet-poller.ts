@@ -25,8 +25,12 @@ const TTL_SECONDS = 240;
 export const startFleetPoller = (): void => {
   const state = { plan: [] as readonly string[], cursor: 0, running: false };
   const portion = async (): Promise<void> => {
-    const slice = state.plan.slice(state.cursor, state.cursor + PORTION);
+    const rotation = state.plan.slice(state.cursor, state.cursor + PORTION);
     state.cursor = (state.cursor + PORTION) % Math.max(state.plan.length, 1);
+    // Hot stops first: every tracked vehicle's next stop refreshes
+    // each tick, so corrections stay small instead of accumulating
+    // over the ~2.5 min the rotation needs to come back around.
+    const slice = [...new Set([...appState.hotStops.get(), ...rotation])];
     const fresh = await fetchStopArrivals(slice);
     const merged = mergeSightings(
       appState.fleetSightings.get(),

@@ -1,46 +1,58 @@
-import { smoothStep, type MotionPoint } from '../../lib/motion/smooth-step.ts';
+import type { FleetMotion } from '../../lib/fleet/fleet-motion.ts';
 import type { VehicleView } from '../../lib/vehicles/types.ts';
+import type { FleetFrame } from './fleet-frame.ts';
+import { materializeFrame } from './materialize-frame.ts';
+import { makeStepMeter } from './measure-steps.ts';
 
 /**
- * Display layer: computed targets update on the data tick, but the
- * markers users see are advanced every animation frame by the
- * smoother — steady glide, no teleports, stale points settle to a
- * stop (site AC-3.1). With prefers-reduced-motion the targets render
- * directly (positions jump, per site AC-4.2).
+ * Render loop in TIMELINE SPACE: each frame the displayed moments
+ * chase the targets (rate-capped, monotonic, stale-frozen) and are
+ * materialized through the route geometry — catch-ups drive along
+ * the street, chord teleports are impossible by construction. With
+ * prefers-reduced-motion, targets are adopted directly.
  */
 export const makeMotionLoop = (
   render: (views: readonly VehicleView[]) => void,
+  reportStep: (meters: number) => void,
 ) => {
   const state = {
-    targets: [] as readonly VehicleView[],
-    displayed: new Map<string, MotionPoint>() as ReadonlyMap<
-      string,
-      MotionPoint
-    >,
+    frame: undefined as FleetFrame | undefined,
+    motion: new Map() as FleetMotion,
     lastFrame: 0,
   };
+  const measure = makeStepMeter();
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const smoothed = (dt: number): readonly VehicleView[] => {
-    state.displayed = smoothStep(state.displayed, state.targets, dt);
-    return state.targets.map((target) => ({
-      ...target,
-      lon: state.displayed.get(target.id)?.lon ?? target.lon,
-      lat: state.displayed.get(target.id)?.lat ?? target.lat,
-    }));
-  };
   const tick = (time: number): void => {
     const dt = Math.min(Math.max(time - state.lastFrame, 0) / 1000, 0.5);
     state.lastFrame = time;
-    render(
-      { true: () => state.targets, false: () => smoothed(dt) }[
-        `${reduced.matches}`
-      ](),
-    );
+    [state.frame]
+      .filter((frame): frame is FleetFrame => frame !== undefined)
+      .forEach((frame) => {
+        const { motion, views } = materializeFrame(
+          state.motion,
+          frame,
+          dt,
+          reduced.matches,
+        );
+        state.motion = motion;
+        reportStep(
+          measure(
+            views.map((view, index) => ({
+              id: view.id,
+              templateKey: frame.targets[index]?.templateKey ?? '',
+              lon: view.lon,
+              lat: view.lat,
+            })),
+            time,
+          ),
+        );
+        render([...frame.schedule, ...views]);
+      });
     requestAnimationFrame(tick);
   };
   return {
-    setTargets: (targets: readonly VehicleView[]): void => {
-      state.targets = targets;
+    setFrame: (frame: FleetFrame): void => {
+      state.frame = frame;
     },
     start: (): void => {
       requestAnimationFrame(tick);

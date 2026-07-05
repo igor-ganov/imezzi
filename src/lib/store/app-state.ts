@@ -34,6 +34,8 @@ export const appState = {
   planning: signal<boolean>(false),
   /** City-sweep SIMON rows — positions recompute parametrically. */
   fleetSightings: signal<readonly FleetSighting[]>([]),
+  /** Next stop of each tracked vehicle — re-polled every tick. */
+  hotStops: signal<readonly string[]>([]),
   /** Epoch ms of the last successful live fetch (freshness banner). */
   lastLiveUpdate: signal<number>(0),
   /** Resolved theme. */

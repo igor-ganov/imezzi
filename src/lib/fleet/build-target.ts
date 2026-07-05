@@ -1,24 +1,23 @@
 import { normalizeLineLabel } from '../vehicles/normalize-line-label.ts';
-import type { VehicleView } from '../vehicles/types.ts';
 import { effectiveCountdown } from './effective-countdown.ts';
 import { advanceProgress, type FleetProgress } from './fleet-memory.ts';
+import type { FleetTarget } from './fleet-target.ts';
 import { momentOf } from './moment-of.ts';
-import { placeAtMoment } from './place-at-moment.ts';
 import { resolveDirection } from './resolve-direction.ts';
 import { roadOf } from './road-of.ts';
 import type { BusOffsets, FleetSighting } from './types.ts';
 
 type Path = readonly (readonly [number, number])[];
 
-/** One vehicle: sticky direction, monotonic progress, placement. */
-export const placeVehicle = (
+/** One vehicle: sticky direction, monotonic extrapolated moment. */
+export const buildTarget = (
   best: FleetSighting,
   offsets: BusOffsets,
   coords: ReadonlyMap<string, readonly [number, number]>,
   nowSeconds: number,
   pathsOf: (label: string) => readonly Path[] | undefined,
   previous: FleetProgress | undefined,
-): { readonly view: VehicleView; readonly progress: FleetProgress } => {
+): { readonly target: FleetTarget; readonly progress: FleetProgress } => {
   const label = normalizeLineLabel(best.row.line);
   const { template, templateKey } = resolveDirection(
     offsets,
@@ -29,32 +28,28 @@ export const placeVehicle = (
   );
   const raw = [template]
     .filter((t): t is NonNullable<typeof t> => t !== undefined)
-    .map((t) => momentOf(t, best.stopId, effectiveCountdown(best, nowSeconds)))[0];
+    .map((t) =>
+      momentOf(t, best.stopId, effectiveCountdown(best, nowSeconds)),
+    )[0];
   const moment = advanceProgress(
     previous,
     templateKey,
     raw ?? 0,
     template?.offsets[template.offsets.length - 1] ?? 0,
   );
-  const placed = [template]
-    .filter(
-      (t): t is NonNullable<typeof t> => t !== undefined && raw !== undefined,
-    )
-    .map((t) =>
-      placeAtMoment(t, coords, moment, roadOf(t, pathsOf(label), coords)),
-    )[0];
-  const anchor = coords.get(best.stopId) ?? [0, 0];
   return {
-    view: {
+    target: {
       id: `bus:${best.row.vehicle}`,
       label,
-      mode: 'bus',
-      lineKey: label,
-      lon: placed?.point[0] ?? anchor[0],
-      lat: placed?.point[1] ?? anchor[1],
-      approximated: false,
-      bearing: placed?.bearing,
+      templateKey,
+      template,
+      road: [template]
+        .filter((t): t is NonNullable<typeof t> => t !== undefined)
+        .map((t) => roadOf(t, pathsOf(label), coords))[0],
+      targetMoment: moment,
       ageSeconds: Math.max(nowSeconds - best.fetchedAtSeconds, 0),
+      anchor: coords.get(best.stopId) ?? [0, 0],
+      dimmed: false,
     },
     progress: { templateKey, moment },
   };

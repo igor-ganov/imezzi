@@ -4,14 +4,14 @@ import type { FleetSighting } from './types.ts';
 /**
  * Seconds until this sighting's vehicle reaches its stop, as of
  * `nowSeconds`: the fetched countdown melts as wall-clock time
- * passes, which is what animates the fleet between sweeps.
+ * passes. NEGATIVE values are meaningful — the vehicle has passed
+ * the stop and keeps travelling (dead reckoning at schedule speed;
+ * validated live: re-poll corrections were ±90 s over 93 s, so
+ * freezing at the stop was the bug, not the extrapolation).
  */
 export const effectiveCountdown = (
   sighting: FleetSighting,
   nowSeconds: number,
 ): number =>
-  Math.max(
-    parseCountdown(sighting.row.countdown, sighting.fetchedAtSeconds) -
-      Math.max(nowSeconds - sighting.fetchedAtSeconds, 0),
-    0,
-  );
+  parseCountdown(sighting.row.countdown, sighting.fetchedAtSeconds) -
+  Math.max(nowSeconds - sighting.fetchedAtSeconds, 0);
