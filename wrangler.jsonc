@@ -11,5 +11,13 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS"
-  }
+  },
+  // FleetHub: ONE shared city poller behind /api/fleet-ws — clients
+  // subscribe over hibernating WebSockets instead of each tab
+  // sweeping 923 stops itself (free-plan quota economics).
+  // SQLite-backed class: required for Durable Objects on free plan.
+  "durable_objects": {
+    "bindings": [{ "name": "FLEET_HUB", "class_name": "FleetHub" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["FleetHub"] }]
 }
