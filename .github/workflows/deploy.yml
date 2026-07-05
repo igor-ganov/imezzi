@@ -67,7 +67,16 @@ jobs:
           CLOUDFLARE_API_KEY: ${{ secrets.CLOUDFLARE_API_KEY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       - name: Smoke-test production
+        # No `curl | head` — head closing the pipe makes curl exit 23
+        # (SIGPIPE) under `bash -e`. A 429 on /api/* is the free-plan
+        # daily invocation quota, not a broken deploy: warn, don't fail.
         run: |
           code=$(curl -sS -o /dev/null -w '%{http_code}' https://imezzi.igor-ganov.workers.dev/)
           test "$code" = "200"
-          curl -sS https://imezzi.igor-ganov.workers.dev/api/lines | head -c 100 | grep -q '"id"'
+          api=$(curl -sS -o /tmp/lines.json -w '%{http_code}' https://imezzi.igor-ganov.workers.dev/api/lines)
+          if [ "$api" = "429" ]; then
+            echo "::warning::API 429 — daily free quota exhausted; deploy itself verified by wrangler. Quota resets 00:00 UTC."
+          else
+            test "$api" = "200"
+            grep -q '"id"' /tmp/lines.json
+          fi
