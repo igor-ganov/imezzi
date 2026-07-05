@@ -4,9 +4,10 @@ import { formatDuration } from '../../lib/route/format-duration.ts';
 import type { Itinerary } from '../../lib/route/types.ts';
 import { appState } from '../../lib/store/app-state.ts';
 
-/** Itinerary sheet header: times, duration, transfers, close. */
+/** Itinerary sheet header: times, duration, collapse, close. */
 export const renderRouteHeader = (
   itinerary: Itinerary | undefined,
+  onCollapse: () => void,
 ): TemplateResult => html`
   <header class="sheet-header">
     <h2 class="sheet-title">
@@ -17,6 +18,15 @@ export const renderRouteHeader = (
         ${itinerary?.transfers} transfers
       </small>
     </h2>
+    <button
+      class="chrome-btn sheet-route"
+      data-testid="route-sheet-collapse"
+      aria-label="Collapse route description"
+      title="Collapse"
+      @click=${onCollapse}
+    >
+      ⌄
+    </button>
     <button
       class="chrome-btn sheet-close"
       data-testid="route-sheet-close"
