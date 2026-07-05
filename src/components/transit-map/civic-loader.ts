@@ -52,4 +52,11 @@ export const startCivicLoader = (map: MapLibreMap): void => {
   };
   map.on('moveend', () => void sync());
   map.on('load', () => void sync());
+  // A theme switch replaces the style: sources are recreated EMPTY
+  // while the tile cache says "already loaded" — push the collected
+  // features back once the new style has its layers (as in the
+  // reference map's restoreCivics-on-styledata).
+  map.on('styledata', () =>
+    setSourceData(map, 'civics', { type: 'FeatureCollection', features }),
+  );
 };

@@ -42,8 +42,12 @@ export const buildStyle = (
     basemapSources,
   ) as StyleSpecification['sources'];
   style.glyphs = `${location.origin}/font/{fontstack}/{range}.pbf`;
+  // POI sprites as in the reference map: light uses OSM Bright's
+  // Maki set (poi-color), dark a white-recoloured copy (poi-dark) so
+  // the same icons stay legible — the civics layer draws shop_11 /
+  // marker_11 from here too.
   style.sprite = `${location.origin}/sprite/${
-    { true: 'dark', false: 'bright' }[`${dark}`]
+    { true: 'poi-dark', false: 'poi-color' }[`${dark}`]
   }/sprite`;
   applyOverlays(style.layers as unknown as MutableLayer[], dark, hardwareGl);
   return style;

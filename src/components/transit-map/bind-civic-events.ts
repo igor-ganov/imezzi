@@ -7,7 +7,7 @@ const title = (text: string): string =>
 
 /** Civic layer clicks open the civic card (AC-1.2). */
 export const bindCivicEvents = (map: MapLibreMap): void => {
-  map.on('click', 'civics-circle', (event) => {
+  map.on('click', 'civics-hit', (event) => {
     const props = event.features?.[0]?.properties ?? {};
     const hit: CivicHit = {
       street: title(`${props['DESVIA'] ?? ''}`),
@@ -20,10 +20,10 @@ export const bindCivicEvents = (map: MapLibreMap): void => {
     };
     appState.activeCivic.set(hit);
   });
-  map.on('mouseenter', 'civics-circle', () => {
+  map.on('mouseenter', 'civics-hit', () => {
     map.getCanvas().style.cursor = 'pointer';
   });
-  map.on('mouseleave', 'civics-circle', () => {
+  map.on('mouseleave', 'civics-hit', () => {
     map.getCanvas().style.cursor = '';
   });
 };
