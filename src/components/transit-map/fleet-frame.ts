@@ -8,11 +8,13 @@ import { hotStops } from '../../lib/fleet/hot-stops.ts';
 import { inferFleet } from '../../lib/fleet/infer-fleet.ts';
 import { fleetPaths } from '../../lib/data/fleet-paths.ts';
 import { itineraryLines } from '../../lib/route/itinerary-lines.ts';
+import { matchItineraryLegs } from '../../lib/route/match-itinerary-legs.ts';
+import { parkedLegViews } from '../../lib/route/parked-leg-views.ts';
 import { romeClock } from '../../lib/schedule/rome-clock.ts';
 import { scheduleVehicles } from '../../lib/schedule/schedule-vehicles.ts';
 import { appState } from '../../lib/store/app-state.ts';
-import { normalizeLineLabel } from '../../lib/vehicles/normalize-line-label.ts';
 import type { VehicleView } from '../../lib/vehicles/types.ts';
+import { frameFilters } from './frame-filters.ts';
 import type { MapData } from './map-data.ts';
 
 export interface FleetFrame {
@@ -30,16 +32,16 @@ const carried = { current: new Map() as TargetCarry };
 
 /**
  * One data tick: timetable-positioned non-bus views + timeline
- * targets for the live fleet, filtered by selection, dimmed by
- * route mode (US-1, US-2, route US-3).
+ * targets for the live fleet + parked pictograms for unmatched
+ * itinerary legs, filtered by selection, dimmed by route mode.
  */
 export const fleetFrame = (data: MapData): FleetFrame => {
-  const selectedKeys = appState.selectedLines.get();
-  const selectedLabels = appState.selectedLabels.get();
-  const routeLabels = itineraryLines(appState.itinerary.get());
+  const filters = {
+    selectedKeys: appState.selectedLines.get(),
+    selectedLabels: appState.selectedLabels.get(),
+    routeLabels: itineraryLines(appState.itinerary.get()),
+  };
   const clock = romeClock(new Date());
-  const inRoute = (label: string): boolean =>
-    routeLabels.size === 0 || routeLabels.has(normalizeLineLabel(label));
   const fleet = inferFleet(
     appState.fleetSightings.get(),
     data.busOffsets,
@@ -56,19 +58,18 @@ export const fleetFrame = (data: MapData): FleetFrame => {
   );
   carried.current = carry;
   appState.hotStops.set(hotStops(targets, 30));
+  const itinerary = appState.itinerary.get();
+  const legMatches = matchItineraryLegs(targets, itinerary, Date.now());
+  appState.legVehicles.set(legMatches);
   return {
-    schedule: scheduleVehicles(data.schedule, clock)
-      .filter(
-        (vehicle) =>
-          selectedKeys.size === 0 || selectedKeys.has(vehicle.lineKey),
-      )
-      .map((vehicle) => ({ ...vehicle, dimmed: !inRoute(vehicle.label) })),
-    targets: targets
-      .filter(
-        (target) =>
-          selectedLabels.size === 0 || selectedLabels.has(target.label),
-      )
-      .map((target) => ({ ...target, dimmed: !inRoute(target.label) })),
+    schedule: frameFilters.schedule(
+      [
+        ...scheduleVehicles(data.schedule, clock),
+        ...parkedLegViews(itinerary, legMatches),
+      ],
+      filters,
+    ),
+    targets: frameFilters.targets(targets, filters),
     freshCount: fleet.targets.length,
     coords: data.stopCoords,
   };

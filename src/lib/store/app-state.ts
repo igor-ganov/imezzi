@@ -30,6 +30,14 @@ export const appState = {
   pickMode: signal<'origin' | 'destination' | undefined>(undefined),
   /** Leg the map should zoom to (route-planner AC-4.2). */
   focusLeg: signal<Leg | undefined>(undefined),
+  /** Vehicle id matched to each transit leg of the itinerary. */
+  legVehicles: signal<ReadonlyMap<number, string | undefined>>(new Map()),
+  /** Highlighted vehicle icon (leg click, route US-3). */
+  selectedVehicleId: signal<string | undefined>(undefined),
+  /** The user's located position (locate button). */
+  mePosition: signal<{ readonly lon: number; readonly lat: number } | undefined>(
+    undefined,
+  ),
   /** Route planner panel open. */
   planning: signal<boolean>(false),
   /** City-sweep SIMON rows — positions recompute parametrically. */

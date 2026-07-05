@@ -24,7 +24,7 @@ export const stopLayerSpecs = (
     source: 'stops',
     minzoom: 13,
     paint: {
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 13, 8, 17, 16],
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 13, 12, 17, 20],
       'circle-color': 'transparent',
       'circle-opacity': 0,
     },
@@ -35,20 +35,20 @@ export const stopLayerSpecs = (
     source: 'stops',
     minzoom: 13,
     paint: {
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 13, 1, 17, 4.5],
-      'circle-color': { light: '#ffffff', dark: '#1c2733' }[theme],
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 13, 2.5, 17, 7],
+      'circle-color': { light: '#ffffff', dark: '#0f151d' }[theme],
       'circle-stroke-color': {
-        light: 'hsl(215 15% 62%)',
-        dark: 'hsl(215 15% 42%)',
+        light: 'hsl(196 75% 34%)',
+        dark: 'hsl(196 70% 58%)',
       }[theme],
       'circle-stroke-width': [
         'case',
         ['boolean', ['feature-state', 'active'], false],
-        3,
-        1.2,
+        3.5,
+        2,
       ],
-      'circle-opacity': dimmed(0.85),
-      'circle-stroke-opacity': dimmed(0.85),
+      'circle-opacity': dimmed(1),
+      'circle-stroke-opacity': dimmed(1),
     },
   };
   return [hit, dot];

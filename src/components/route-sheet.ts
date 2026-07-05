@@ -1,11 +1,10 @@
 import { LitElement, html, type TemplateResult } from 'lit';
 import { state } from 'lit/decorators.js';
 import { branch } from '../lib/branch.ts';
-import { formatClock } from '../lib/route/format-clock.ts';
-import { formatDuration } from '../lib/route/format-duration.ts';
 import type { Itinerary } from '../lib/route/types.ts';
 import { appState } from '../lib/store/app-state.ts';
 import { renderLeg } from './route-sheet/render-leg.ts';
+import { renderRouteHeader } from './route-sheet/render-route-header.ts';
 
 /** Itinerary list view in the bottom sheet (route-planner US-4). */
 export class RouteSheet extends LitElement {
@@ -31,29 +30,9 @@ export class RouteSheet extends LitElement {
           data-testid="route-sheet"
           aria-label="Itinerary"
         >
-          <header class="sheet-header">
-            <h2 class="sheet-title">
-              ${formatClock(this.itinerary?.startTime ?? '')} →
-              ${formatClock(this.itinerary?.endTime ?? '')}
-              <small class="sheet-subtitle">
-                ${formatDuration(this.itinerary?.durationSec ?? 0)} ·
-                ${this.itinerary?.transfers} transfers
-              </small>
-            </h2>
-            <button
-              class="chrome-btn sheet-close"
-              data-testid="route-sheet-close"
-              aria-label="Close route"
-              @click=${() => {
-                appState.itinerary.set(undefined);
-                appState.itineraries.set([]);
-              }}
-            >
-              ✕
-            </button>
-          </header>
+          ${renderRouteHeader(this.itinerary)}
           <ul class="board">
-            ${this.itinerary?.legs.map(renderLeg)}
+            ${this.itinerary?.legs.map((leg, index) => renderLeg(leg, index))}
           </ul>
         </section>
       `,

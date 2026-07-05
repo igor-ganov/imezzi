@@ -44,5 +44,17 @@ export const vehicleLayerSpecs = (
       'circle-stroke-opacity': unlessDimmed(1),
     },
   };
-  return [halo, dot, vehicleArrowSpec(), ...vehicleBadgeSpecs(theme)];
+  const selected: CircleLayerSpecification = {
+    id: 'vehicles-selected',
+    type: 'circle',
+    source: 'vehicles',
+    filter: ['==', ['get', 'id'], '___none___'],
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 14, 16, 20],
+      'circle-color': 'transparent',
+      'circle-stroke-color': { light: 'hsl(35 95% 44%)', dark: 'hsl(38 100% 58%)' }[theme],
+      'circle-stroke-width': 3.5,
+    },
+  };
+  return [selected, halo, dot, vehicleArrowSpec(), ...vehicleBadgeSpecs(theme)];
 };

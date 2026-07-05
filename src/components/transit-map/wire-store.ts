@@ -1,5 +1,6 @@
 import type { Map as MapLibreMap } from 'maplibre-gl';
-import { styleUrl } from '../../lib/map/style-url.ts';
+import { buildStyle } from '../../lib/map/build-style.ts';
+import { hasHardwareGl } from '../../lib/map/has-hardware-gl.ts';
 import { appState } from '../../lib/store/app-state.ts';
 import { startFleetPoller } from './fleet-poller.ts';
 
@@ -11,7 +12,9 @@ export const wireStore = (
     readonly syncVehicles: () => void;
   },
 ): void => {
-  appState.theme.subscribe((theme) => map.setStyle(styleUrl(theme)));
+  appState.theme.subscribe((theme) =>
+    map.setStyle(buildStyle(theme, hasHardwareGl())),
+  );
   appState.selectedLines.subscribe(hooks.syncSelection);
   appState.itinerary.subscribe(() => {
     hooks.syncSelection();

@@ -40,6 +40,7 @@ export const makePlannerController = (host: PlannerHost) => {
     appState.origin.set(undefined);
     appState.destination.set(undefined);
     appState.pickMode.set(undefined);
+    appState.selectedVehicleId.set(undefined);
   };
   appState.origin.subscribe(() => void compute());
   appState.destination.subscribe(() => void compute());

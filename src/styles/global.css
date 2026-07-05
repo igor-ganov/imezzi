@@ -709,6 +709,47 @@ route-planner .fab-route {
   text-transform: none;
 }
 
+/* Locate control (ported from the events-site map) */
+.locate-busy {
+  opacity: 0.65;
+}
+
+.locate-busy svg {
+  animation: locate-spin 0.9s linear infinite;
+}
+
+@keyframes locate-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.map-toast {
+  position: fixed;
+  z-index: 60;
+  top: 4.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(420px, calc(100vw - 2rem));
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: var(--glass);
+  -webkit-backdrop-filter: var(--glass);
+  color: var(--ink);
+  font-size: var(--step--1);
+  box-shadow: var(--shadow-md);
+  animation: map-toast-in 0.18s ease;
+}
+
+@keyframes map-toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px);
+  }
+}
+
 .noscript-panel {
   position: fixed;
   inset: 0;

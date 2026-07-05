@@ -1,13 +1,9 @@
 import { Map as MapLibreMap } from 'maplibre-gl';
-import { styleUrl } from '../../lib/map/style-url.ts';
+import { buildStyle } from '../../lib/map/build-style.ts';
+import { hasHardwareGl } from '../../lib/map/has-hardware-gl.ts';
 import { appState } from '../../lib/store/app-state.ts';
 import { addLayers } from './add-layers.ts';
-import { bindCivicEvents } from './bind-civic-events.ts';
-import { bindPickMode } from './bind-pick-mode.ts';
-import { bindRouteMode } from './bind-route-mode.ts';
-import { bindSearchPin } from './bind-search-pin.ts';
-import { bindStopEvents } from './bind-stop-events.ts';
-import { startCivicLoader } from './civic-loader.ts';
+import { bindAll } from './bind-all.ts';
 import { wireStore } from './wire-store.ts';
 import { loadMapData, type MapData } from './map-data.ts';
 import { makeStateMarker } from './state-marker.ts';
@@ -24,9 +20,10 @@ export const makeMapController = (container: HTMLElement) => {
       .filter((data): data is MapData => data !== undefined)
       .forEach(fn);
   const start = () => {
+    const relief = hasHardwareGl();
     const map = new MapLibreMap({
       container,
-      style: styleUrl(appState.theme.get()),
+      style: buildStyle(appState.theme.get(), relief),
       center: [GENOA[0], GENOA[1]],
       zoom: 13.2,
       attributionControl: {
@@ -45,12 +42,7 @@ export const makeMapController = (container: HTMLElement) => {
       syncVehicles();
       syncSelection();
     });
-    bindStopEvents(map);
-    bindCivicEvents(map);
-    bindSearchPin(map);
-    bindRouteMode(map);
-    bindPickMode(map);
-    startCivicLoader(map);
+    bindAll(map);
     loadMapData().then((data) => {
       state.data = data;
       syncStops();

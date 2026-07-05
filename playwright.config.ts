@@ -1,4 +1,5 @@
 import { defineConfig } from '@playwright/test';
+import os from 'node:os';
 
 /**
  * Hermetic E2E: the web server serves the built site + worker proxy,
@@ -10,7 +11,14 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
   retries: 0,
-  workers: process.env['CI'] ? 4 : undefined,
+  // One software-WebGL page saturates ~4 cores while compiling the
+  // basemap; workers are budgeted to that, not to core count / 2 —
+  // oversubscription starves every page into false timeouts.
+  workers: process.env['CI'] ? 4 : Math.max(2, Math.floor(os.cpus().length / 4)),
+  // Cold boot compiles the full basemap under software WebGL when
+  // workers run in parallel — the per-test budget must exceed the
+  // wait ceiling (E2E_MAX_WAIT_MS) with room for the test body.
+  timeout: 60000,
   reporter: 'list',
   use: {
     baseURL: 'http://127.0.0.1:8791',
