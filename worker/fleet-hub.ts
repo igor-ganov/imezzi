@@ -2,31 +2,35 @@ import { branch } from '../src/lib/branch.ts';
 import type { HubSocket, HubState } from './do-types.ts';
 import { fetchPlan } from './fleet-hub/fetch-plan.ts';
 import { hubUpgrade } from './fleet-hub/hub-upgrade.ts';
-import { pollPortion } from './fleet-hub/poll-portion.ts';
-import { nextSlice } from './fleet-hub/rotation.ts';
+import { sweepTick, type SweepCursor } from './fleet-hub/sweep-tick.ts';
+import type { TickEntry } from './fleet-hub/tick-log.ts';
 
-const PORTION = 45;
-const TICK_MS = 5000;
 const HOT_CAP = 60;
 
 /**
- * ONE poller for ALL clients (quota economics: the per-tab sweep
- * burned the account's daily invocation quota). While at least one
- * WebSocket is connected an alarm chain sweeps the city and
- * broadcasts each portion; with no sockets the chain simply does not
- * re-arm — an unwatched city costs zero invocations. Hibernation
- * keeps idle sockets free; in-memory state (plan/cursor/hot) is
- * disposable — after an eviction the sweep refills within a cycle.
+ * ONE poller for ALL clients. Sweeps run ONLY while at least one
+ * WebSocket is connected — with no sockets the alarm chain does not
+ * re-arm, so an unwatched city costs zero invocations and zero
+ * upstream traffic. Every tick lands in a persisted ring log
+ * (/api/fleet-log) with anomaly stamps; consecutive EMPTY polls back
+ * the cadence off until data returns (see sweep-tick.ts).
  */
 export class FleetHub {
   private plan: readonly string[] = [];
-  private cursor = 0;
+  private at: SweepCursor = { cursor: 0, emptyStreak: 0 };
   private hot: readonly string[] = [];
 
   constructor(private readonly state: HubState) {}
 
-  fetch(request: Request): Response {
-    return hubUpgrade(request, this.state);
+  async fetch(request: Request): Promise<Response> {
+    const wantsLog = new URL(request.url).pathname === '/api/fleet-log';
+    return branch(wantsLog)(
+      async () =>
+        Response.json(
+          (await this.state.storage.get<readonly TickEntry[]>('log')) ?? [],
+        ),
+      () => Promise.resolve(hubUpgrade(request, this.state)),
+    );
   }
 
   private async planOnce(): Promise<readonly string[]> {
@@ -41,17 +45,13 @@ export class FleetHub {
     await branch(sockets.length === 0)(
       () => Promise.resolve(),
       async () => {
-        const { slice, cursor } = nextSlice(
+        this.at = await sweepTick(
+          this.state,
+          sockets,
           await this.planOnce(),
-          this.cursor,
+          this.at,
           this.hot,
-          PORTION,
         );
-        this.cursor = cursor;
-        const sightings = await pollPortion(slice);
-        const payload = JSON.stringify({ type: 'portion', sightings });
-        sockets.forEach((socket) => socket.send(payload));
-        this.state.storage.setAlarm(Date.now() + TICK_MS);
       },
     );
   }

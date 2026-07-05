@@ -13,6 +13,8 @@ export interface HubState {
   readonly storage: {
     readonly setAlarm: (at: number) => void;
     readonly getAlarm: () => Promise<number | null>;
+    readonly get: <T>(key: string) => Promise<T | undefined>;
+    readonly put: (key: string, value: unknown) => Promise<void>;
   };
 }
 

@@ -26,6 +26,7 @@ export default {
       env.FLEET_HUB.get(env.FLEET_HUB.idFromName('city')).fetch(request);
     const special: Readonly<Record<string, () => Promise<Response>>> = {
       '/api/fleet-ws': hub,
+      '/api/fleet-log': hub,
     };
     return (
       special[path]?.() ??
