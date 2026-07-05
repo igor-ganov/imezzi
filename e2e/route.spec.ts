@@ -75,6 +75,9 @@ test('the planner panel folds away once the route is built', async ({
 test('clearing the route restores the normal map state', async ({ page }) => {
   await boot(page);
   await planRoute(page);
+  // Clear lives in the panel, which auto-folds after planning —
+  // reopen it deterministically via the FAB.
+  await page.getByTestId('route-fab').click();
   await page.getByTestId('route-clear').click();
   await expect(page.getByTestId('route-sheet')).toHaveCount(0);
   await expect(page.locator('transit-map')).toHaveAttribute(
