@@ -20,6 +20,13 @@ export const applyOverlays = (
     .forEach((layer) => {
       (layer.layout ?? {})['text-font'] = ['Noto Sans Regular'];
     });
+  // Shop/restaurant names read one zoom earlier than stock OSM
+  // Bright/Dark Matter — the reference map's POI presence.
+  layers
+    .filter((layer) => layer['source-layer'] === 'poi')
+    .forEach((layer) => {
+      layer['minzoom'] = Math.max(Number(layer['minzoom'] ?? 14) - 1, 13);
+    });
   const roadAt = layers.findIndex(
     (layer) => layer['source-layer'] === 'transportation',
   );

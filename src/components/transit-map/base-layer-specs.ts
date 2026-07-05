@@ -1,6 +1,7 @@
 import type {
   CircleLayerSpecification,
   LineLayerSpecification,
+  SymbolLayerSpecification,
 } from 'maplibre-gl';
 import { byModeColor } from './by-mode-color.ts';
 import { stopLayerSpecs } from './stop-layer-specs.ts';
@@ -8,7 +9,11 @@ import { stopLayerSpecs } from './stop-layer-specs.ts';
 /** Route-line and stop layers (live-map design §4). */
 export const baseLayerSpecs = (
   theme: 'light' | 'dark',
-): readonly (LineLayerSpecification | CircleLayerSpecification)[] => {
+): readonly (
+  | LineLayerSpecification
+  | CircleLayerSpecification
+  | SymbolLayerSpecification
+)[] => {
   const routeLines: LineLayerSpecification = {
     id: 'route-lines',
     type: 'line',

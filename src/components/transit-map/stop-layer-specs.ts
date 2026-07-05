@@ -1,7 +1,9 @@
 import type {
   CircleLayerSpecification,
   ExpressionSpecification,
+  SymbolLayerSpecification,
 } from 'maplibre-gl';
+import { stopActiveSpec } from './stop-active-spec.ts';
 
 const dimmed = (full: number): ExpressionSpecification => [
   'case',
@@ -11,13 +13,14 @@ const dimmed = (full: number): ExpressionSpecification => [
 ];
 
 /**
- * Stop dot + its generously sized invisible hit target (AC-1.2).
- * Stops are quiet, neutral background chrome: the moving vehicles
- * are the loud layer — never the other way around.
+ * Stops as in the reference map: the Maki bus symbol from the POI
+ * sprite (white-recoloured on dark) instead of abstract circles —
+ * with the invisible padded hit target for taps (AC-1.2) and an
+ * accent ring on the active (opened) stop.
  */
 export const stopLayerSpecs = (
   theme: 'light' | 'dark',
-): readonly CircleLayerSpecification[] => {
+): readonly (CircleLayerSpecification | SymbolLayerSpecification)[] => {
   const hit: CircleLayerSpecification = {
     id: 'stops-hit',
     type: 'circle',
@@ -29,27 +32,18 @@ export const stopLayerSpecs = (
       'circle-opacity': 0,
     },
   };
-  const dot: CircleLayerSpecification = {
-    id: 'stops-circle',
-    type: 'circle',
+  const icons: SymbolLayerSpecification = {
+    id: 'stops-icon',
+    type: 'symbol',
     source: 'stops',
     minzoom: 13,
+    layout: {
+      'icon-image': 'bus_11',
+      'icon-size': ['interpolate', ['linear'], ['zoom'], 13, 0.9, 17, 1.4],
+    },
     paint: {
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 13, 2.5, 17, 7],
-      'circle-color': { light: '#ffffff', dark: '#0f151d' }[theme],
-      'circle-stroke-color': {
-        light: 'hsl(196 75% 34%)',
-        dark: 'hsl(196 70% 58%)',
-      }[theme],
-      'circle-stroke-width': [
-        'case',
-        ['boolean', ['feature-state', 'active'], false],
-        3.5,
-        2,
-      ],
-      'circle-opacity': dimmed(1),
-      'circle-stroke-opacity': dimmed(1),
+      'icon-opacity': dimmed(1),
     },
   };
-  return [hit, dot];
+  return [hit, stopActiveSpec(theme), icons];
 };
