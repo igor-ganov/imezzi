@@ -40,6 +40,9 @@ export const sweepTick = async (
       vehicles: result.vehicles,
       ms: result.ms,
       sockets: sockets.length,
+      errors: result.errors,
+      wrapped: result.wrapped,
+      hot: hot.filter((id) => slice.includes(id)).length,
     },
   );
   await state.storage.put('log', log);

@@ -215,6 +215,21 @@ describe('inferFleet — the count invariant', () => {
   });
 });
 
+describe('inferFleet — barrata labels match base templates (regression)', () => {
+  test('a 1/ (barrata) run tracks the 1 template, keeps its label', () => {
+    // Live-caught: SIMON line '604/' found no template and anchored
+    // to sighting stops, teleporting kilometres between them.
+    const result = inferFleet(
+      [sighting('B', { line: '1/' })],
+      offsets,
+      coords,
+      1000,
+    );
+    expect(result.targets[0]?.template).toBeDefined();
+    expect(result.targets[0]?.label).toBe('1/');
+  });
+});
+
 describe('inferFleet — no freeze at the sighted stop (regression)', () => {
   test('a vehicle keeps moving past its stop at schedule speed', () => {
     // Sighted 1' from B at t=1000. At t=1120 the countdown is −60:

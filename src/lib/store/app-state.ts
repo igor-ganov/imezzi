@@ -1,5 +1,6 @@
 import { signal } from './signal.ts';
 import type { CivicHit } from '../civic/civic-hit.ts';
+import type { FleetTarget } from '../fleet/fleet-target.ts';
 import type { FleetSighting } from '../fleet/types.ts';
 import type { PinTarget } from '../map/pin-target.ts';
 import type { Itinerary, Leg, Place } from '../route/types.ts';
@@ -34,6 +35,10 @@ export const appState = {
   legVehicles: signal<ReadonlyMap<number, string | undefined>>(new Map()),
   /** Highlighted vehicle icon (leg click, route US-3). */
   selectedVehicleId: signal<string | undefined>(undefined),
+  /** Vehicle whose stop board sheet is open (tap on the icon). */
+  activeVehicleId: signal<string | undefined>(undefined),
+  /** Current fleet targets by vehicle id (vehicle sheet data). */
+  fleetTargets: signal<ReadonlyMap<string, FleetTarget>>(new Map()),
   /** The user's located position (locate button). */
   mePosition: signal<{ readonly lon: number; readonly lat: number } | undefined>(
     undefined,

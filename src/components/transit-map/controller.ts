@@ -4,6 +4,7 @@ import { hasHardwareGl } from '../../lib/map/has-hardware-gl.ts';
 import { appState } from '../../lib/store/app-state.ts';
 import { addLayers } from './add-layers.ts';
 import { bindAll } from './bind-all.ts';
+import { exposeMap } from './expose-map.ts';
 import { wireStore } from './wire-store.ts';
 import { loadMapData, type MapData } from './map-data.ts';
 import { makeStateMarker } from './state-marker.ts';
@@ -43,6 +44,7 @@ export const makeMapController = (container: HTMLElement) => {
       syncSelection();
     });
     bindAll(map);
+    exposeMap(map);
     loadMapData().then((data) => {
       state.data = data;
       syncStops();

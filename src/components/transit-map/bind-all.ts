@@ -7,6 +7,7 @@ import { bindRouteToTap } from './bind-route-to-tap.ts';
 import { bindSearchPin } from './bind-search-pin.ts';
 import { bindSelectedVehicle } from './bind-selected-vehicle.ts';
 import { bindStopEvents } from './bind-stop-events.ts';
+import { bindVehicleEvents } from './bind-vehicle-events.ts';
 import { startCivicLoader } from './civic-loader.ts';
 
 /** All map-instance event/signal bindings, in one place. */
@@ -19,5 +20,6 @@ export const bindAll = (map: MapLibreMap): void => {
   bindPickMode(map);
   bindMe(map);
   bindSelectedVehicle(map);
+  bindVehicleEvents(map);
   startCivicLoader(map);
 };

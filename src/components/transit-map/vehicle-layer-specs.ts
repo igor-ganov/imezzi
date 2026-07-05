@@ -6,6 +6,7 @@ import type {
 import { byModeColor } from './by-mode-color.ts';
 import { vehicleArrowSpec } from './vehicle-arrow-spec.ts';
 import { vehicleBadgeSpecs } from './vehicle-badge-specs.ts';
+import { vehicleHaloSpecs } from './vehicle-halo-specs.ts';
 
 const CONTRAST = { light: '#ffffff', dark: '#10161f' };
 
@@ -16,7 +17,7 @@ const unlessDimmed = (full: number): ExpressionSpecification => [
   full,
 ];
 
-/** Vehicle marker layers: halo, dot, then badge + label. */
+/** Vehicle marker layers: hit+ring, halo, dot, arrow, badge+label. */
 export const vehicleLayerSpecs = (
   theme: 'light' | 'dark',
 ): readonly (CircleLayerSpecification | SymbolLayerSpecification)[] => {
@@ -44,17 +45,11 @@ export const vehicleLayerSpecs = (
       'circle-stroke-opacity': unlessDimmed(1),
     },
   };
-  const selected: CircleLayerSpecification = {
-    id: 'vehicles-selected',
-    type: 'circle',
-    source: 'vehicles',
-    filter: ['==', ['get', 'id'], '___none___'],
-    paint: {
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 14, 16, 20],
-      'circle-color': 'transparent',
-      'circle-stroke-color': { light: 'hsl(35 95% 44%)', dark: 'hsl(38 100% 58%)' }[theme],
-      'circle-stroke-width': 3.5,
-    },
-  };
-  return [selected, halo, dot, vehicleArrowSpec(), ...vehicleBadgeSpecs(theme)];
+  return [
+    ...vehicleHaloSpecs(theme),
+    halo,
+    dot,
+    vehicleArrowSpec(),
+    ...vehicleBadgeSpecs(theme),
+  ];
 };

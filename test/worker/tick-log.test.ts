@@ -8,6 +8,9 @@ const entry = (over: Partial<TickEntry>): Omit<TickEntry, 'anomaly'> => ({
   vehicles: 60,
   ms: 900,
   sockets: 2,
+  errors: 0,
+  wrapped: 0,
+  hot: 5,
   ...over,
 });
 
@@ -27,6 +30,12 @@ describe('pushTick — hub sweep telemetry', () => {
   test('an idle-plan tick (no stops) is not an anomaly', () => {
     const log = pushTick([], entry({ stops: 0, sightings: 0, vehicles: 0 }));
     expect(log[0]?.anomaly).toBeUndefined();
+  });
+
+  test('majority upstream failures stamp "errors"', () => {
+    expect(pushTick([], entry({ errors: 30, sightings: 40 }))[0]?.anomaly).toBe(
+      'errors',
+    );
   });
 
   test('a slow sweep stamps "slow"', () => {

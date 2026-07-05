@@ -2,14 +2,17 @@ import {
   motionStep,
   type FleetMotion,
 } from '../../lib/fleet/fleet-motion.ts';
+import { liveGoal } from '../../lib/fleet/live-target.ts';
 import { targetView } from '../../lib/fleet/target-view.ts';
 import type { VehicleView } from '../../lib/vehicles/types.ts';
 import type { FleetFrame } from './fleet-frame.ts';
 
 /**
  * Advance the displayed moments one frame and materialize them into
- * views through the route geometry. `instant` (reduced motion)
- * adopts targets directly.
+ * views through the route geometry. Each target's goal MOVES in real
+ * time (liveGoal dead reckoning), so vehicles glide continuously
+ * instead of sprinting to a frozen point and standing until the next
+ * data portion. `instant` (reduced motion) adopts goals directly.
  */
 export const materializeFrame = (
   motion: FleetMotion,
@@ -17,14 +20,18 @@ export const materializeFrame = (
   dt: number,
   instant: boolean,
 ): { readonly motion: FleetMotion; readonly views: readonly VehicleView[] } => {
+  const nowMs = Date.now();
   const next = motionStep(
     motion,
-    frame.targets.map((target) => ({
-      id: target.id,
-      templateKey: target.templateKey,
-      targetMoment: target.targetMoment,
-      ageSeconds: { true: 0, false: target.ageSeconds }[`${instant}`] ?? 0,
-    })),
+    frame.targets.map((target) => {
+      const goal = liveGoal(target, nowMs);
+      return {
+        id: target.id,
+        templateKey: target.templateKey,
+        targetMoment: goal.moment,
+        ageSeconds: { true: 0, false: goal.ageSeconds }[`${instant}`] ?? 0,
+      };
+    }),
     { true: 3600, false: dt }[`${instant}`] ?? dt,
   );
   return {

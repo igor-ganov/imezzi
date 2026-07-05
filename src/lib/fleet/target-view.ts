@@ -22,7 +22,9 @@ export const targetView = (
     lineKey: target.label,
     lon: placed?.point[0] ?? target.anchor[0],
     lat: placed?.point[1] ?? target.anchor[1],
-    approximated: false,
+    // No route template (a GTFS gap, e.g. line 617): the marker sits
+    // at its sighting stop — an approximation, so it carries the ⚠.
+    approximated: target.template === undefined,
     bearing: placed?.bearing,
     ageSeconds: target.ageSeconds,
     dimmed: target.dimmed,

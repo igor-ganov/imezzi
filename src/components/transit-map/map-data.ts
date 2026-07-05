@@ -2,6 +2,7 @@ import type { Stop } from '../../lib/amt/types.ts';
 import { loadBusOffsets } from '../../lib/data/load-bus-offsets.ts';
 import { loadSchedule } from '../../lib/data/load-schedule.ts';
 import { loadStops } from '../../lib/data/load-stops.ts';
+import { retimeOffsets } from '../../lib/fleet/retime-offsets.ts';
 import type { BusOffsets } from '../../lib/fleet/types.ts';
 import type { Schedule } from '../../lib/schedule/types.ts';
 
@@ -19,12 +20,16 @@ export const loadMapData = async (): Promise<MapData> => {
     loadSchedule(),
     loadBusOffsets(),
   ]);
+  const stopCoords = new Map(
+    stops.map((stop) => [stop.id, [stop.lon, stop.lat] as const]),
+  );
   return {
     stops,
     schedule,
-    busOffsets,
-    stopCoords: new Map(
-      stops.map((stop) => [stop.id, [stop.lon, stop.lat] as const]),
-    ),
+    // AMT rounds GTFS stop_times to minutes: ~26% of segments are
+    // zero-duration (infinite speed → position jumps). Re-time once
+    // at load so every consumer sees strictly increasing offsets.
+    busOffsets: retimeOffsets(busOffsets, stopCoords),
+    stopCoords,
   };
 };

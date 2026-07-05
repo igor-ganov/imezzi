@@ -22,6 +22,7 @@ const target = (
   road: undefined,
   targetMoment,
   ageSeconds: 0,
+  builtAtMs: 0,
   anchor: [8.9, 44.0],
   dimmed: false,
 });

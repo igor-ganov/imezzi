@@ -13,6 +13,7 @@ const target = (id: string, over: Partial<FleetTarget> = {}): FleetTarget => ({
   road: undefined,
   targetMoment: 100,
   ageSeconds: 5,
+  builtAtMs: 0,
   anchor: [8.9, 44.1],
   dimmed: false,
   ...over,

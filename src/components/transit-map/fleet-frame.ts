@@ -58,6 +58,9 @@ export const fleetFrame = (data: MapData): FleetFrame => {
   );
   carried.current = carry;
   appState.hotStops.set(hotStops(targets, 30));
+  appState.fleetTargets.set(
+    new Map(targets.map((target) => [target.id, target])),
+  );
   const itinerary = appState.itinerary.get();
   const legMatches = matchItineraryLegs(targets, itinerary, Date.now());
   appState.legVehicles.set(legMatches);

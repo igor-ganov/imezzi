@@ -1,3 +1,5 @@
+import { recordJump } from './jump-forensics.ts';
+
 export interface StepSample {
   readonly id: string;
   readonly templateKey: string;
@@ -30,7 +32,15 @@ export const makeStepMeter = () => {
           sample.lon - (previous?.lon ?? sample.lon),
           sample.lat - (previous?.lat ?? sample.lat),
         ) * METERS_PER_DEGREE;
-      return Math.max(max, { true: step, false: 0 }[`${comparable}`] ?? 0);
+      const counted = { true: step, false: 0 }[`${comparable}`] ?? 0;
+      recordJump(
+        sample.id,
+        sample.templateKey,
+        counted,
+        [previous?.lon, previous?.lat],
+        [sample.lon, sample.lat],
+      );
+      return Math.max(max, counted);
     }, 0);
     state.last = new Map(samples.map((sample) => [sample.id, sample]));
     state.window = [

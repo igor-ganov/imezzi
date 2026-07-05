@@ -1,7 +1,10 @@
 import type { FleetMotion } from '../../lib/fleet/fleet-motion.ts';
 import type { VehicleView } from '../../lib/vehicles/types.ts';
+import { bindKeyOf } from './bind-key-of.ts';
 import type { FleetFrame } from './fleet-frame.ts';
+import { publishFrameDebug } from './frame-forensics.ts';
 import { materializeFrame } from './materialize-frame.ts';
+import { makeMotionLog } from './motion-log.ts';
 import { makeStepMeter } from './measure-steps.ts';
 
 /**
@@ -21,6 +24,7 @@ export const makeMotionLoop = (
     lastFrame: 0,
   };
   const measure = makeStepMeter();
+  const record = makeMotionLog();
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const tick = (time: number): void => {
     const dt = Math.min(Math.max(time - state.lastFrame, 0) / 1000, 0.5);
@@ -35,17 +39,18 @@ export const makeMotionLoop = (
           reduced.matches,
         );
         state.motion = motion;
-        reportStep(
-          measure(
-            views.map((view, index) => ({
-              id: view.id,
-              templateKey: frame.targets[index]?.templateKey ?? '',
-              lon: view.lon,
-              lat: view.lat,
-            })),
-            time,
-          ),
+        const worst = measure(
+          views.map((view, index) => ({
+            id: view.id,
+            templateKey: bindKeyOf(frame.targets[index]),
+            lon: view.lon,
+            lat: view.lat,
+          })),
+          time,
         );
+        reportStep(worst);
+        record(worst, views.length, Math.round(dt * 1000));
+        publishFrameDebug(frame.targets, motion, dt);
         render([...frame.schedule, ...views]);
       });
     requestAnimationFrame(tick);

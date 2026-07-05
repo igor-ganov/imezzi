@@ -14,6 +14,10 @@ export interface FleetTarget {
   readonly road: Road | undefined;
   readonly targetMoment: number;
   readonly ageSeconds: number;
+  /** Epoch ms when this target was computed — the moment and age
+   *  advance in real time from here (dead reckoning between data
+   *  portions; the render chase never waits for the next portion). */
+  readonly builtAtMs: number;
   /** Sighting-stop coordinate — the anchor when no template fits. */
   readonly anchor: readonly [number, number];
   readonly dimmed: boolean;

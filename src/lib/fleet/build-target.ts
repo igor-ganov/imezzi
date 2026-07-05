@@ -1,4 +1,5 @@
 import { normalizeLineLabel } from '../vehicles/normalize-line-label.ts';
+import { templateLineOf } from './template-line-of.ts';
 import { effectiveCountdown } from './effective-countdown.ts';
 import { advanceProgress, type FleetProgress } from './fleet-memory.ts';
 import type { FleetTarget } from './fleet-target.ts';
@@ -19,9 +20,10 @@ export const buildTarget = (
   previous: FleetProgress | undefined,
 ): { readonly target: FleetTarget; readonly progress: FleetProgress } => {
   const label = normalizeLineLabel(best.row.line);
+  const templateLine = templateLineOf(label);
   const { template, templateKey } = resolveDirection(
     offsets,
-    label,
+    templateLine,
     best.stopId,
     best.row.destination,
     previous,
@@ -45,9 +47,10 @@ export const buildTarget = (
       template,
       road: [template]
         .filter((t): t is NonNullable<typeof t> => t !== undefined)
-        .map((t) => roadOf(t, pathsOf(label), coords))[0],
+        .map((t) => roadOf(t, pathsOf(templateLine), coords))[0],
       targetMoment: moment,
       ageSeconds: Math.max(nowSeconds - best.fetchedAtSeconds, 0),
+      builtAtMs: Date.now(),
       anchor: coords.get(best.stopId) ?? [0, 0],
       dimmed: false,
     },
