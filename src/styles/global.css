@@ -709,6 +709,53 @@ route-planner .fab-route {
   text-transform: none;
 }
 
+/* Alternative itinerary cards in the route sheet */
+.sheet-alts {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.25rem 0 0.5rem;
+  scrollbar-width: thin;
+}
+
+.alt-card {
+  display: grid;
+  gap: 0.3rem;
+  flex: 0 0 auto;
+  min-width: 9.5rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.alt-card.is-active {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.alt-card-times {
+  display: grid;
+}
+
+.alt-card-times small {
+  color: var(--ink-soft);
+}
+
+.alt-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+/* Route-here button sits right next to the close control */
+.sheet-route {
+  margin-inline-start: auto;
+}
+
 /* Locate control (ported from the events-site map) */
 .locate-busy {
   opacity: 0.65;

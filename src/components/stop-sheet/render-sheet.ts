@@ -1,13 +1,15 @@
 import { html, type TemplateResult } from 'lit';
 import { branch } from '../../lib/branch.ts';
+import { renderRouteButton } from '../shared/render-route-button.ts';
 import type { StopSheetHost } from './host.ts';
 import { renderBoardRow } from './render-board-row.ts';
 import { STOP_SHEET_LOCATORS } from './stop-sheet.locators.ts';
 
-/** Sheet body: header, staleness note, departures board. */
+/** Sheet body: header, route-here, staleness note, departures. */
 export const renderSheet = (
   host: StopSheetHost,
   onClose: () => void,
+  onRoute: () => void,
 ): TemplateResult => html`
   <section
     class="sheet"
@@ -18,6 +20,11 @@ export const renderSheet = (
       <h2 class="sheet-title" data-testid=${STOP_SHEET_LOCATORS.title}>
         ${host.stopName.toLowerCase()}
       </h2>
+      ${renderRouteButton(
+        STOP_SHEET_LOCATORS.route,
+        'Route to this stop',
+        onRoute,
+      )}
       <button
         class="chrome-btn sheet-close"
         data-testid=${STOP_SHEET_LOCATORS.close}

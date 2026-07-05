@@ -53,6 +53,24 @@ test('alternatives switch the active itinerary', async ({ page }) => {
   );
 });
 
+test('the sheet lists all alternatives as cards with line badges', async ({
+  page,
+}) => {
+  await boot(page);
+  await planRoute(page);
+  const cards = page.getByTestId('route-alt-card');
+  await expect(cards).toHaveCount(2, { timeout: MAX_WAIT });
+  await expect(cards.first()).toHaveAttribute('aria-selected', 'true');
+  // The first (active) alternative carries the bus 18 + metro badges.
+  await expect(cards.first().locator('.line-badge')).toHaveCount(2);
+  // Selecting the second card switches the active itinerary in place.
+  await cards.nth(1).click();
+  await expect(cards.nth(1)).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByTestId('route-leg')).toHaveCount(1, {
+    timeout: MAX_WAIT,
+  });
+});
+
 test('clearing the route restores the normal map state', async ({ page }) => {
   await boot(page);
   await planRoute(page);

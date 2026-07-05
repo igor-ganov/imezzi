@@ -3,6 +3,7 @@ import { bindCivicEvents } from './bind-civic-events.ts';
 import { bindMe } from './bind-me.ts';
 import { bindPickMode } from './bind-pick-mode.ts';
 import { bindRouteMode } from './bind-route-mode.ts';
+import { bindRouteToTap } from './bind-route-to-tap.ts';
 import { bindSearchPin } from './bind-search-pin.ts';
 import { bindSelectedVehicle } from './bind-selected-vehicle.ts';
 import { bindStopEvents } from './bind-stop-events.ts';
@@ -14,6 +15,7 @@ export const bindAll = (map: MapLibreMap): void => {
   bindCivicEvents(map);
   bindSearchPin(map);
   bindRouteMode(map);
+  bindRouteToTap(map);
   bindPickMode(map);
   bindMe(map);
   bindSelectedVehicle(map);

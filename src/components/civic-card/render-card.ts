@@ -1,6 +1,8 @@
 import { html, type TemplateResult } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 import type { CivicHit } from '../../lib/civic/civic-hit.ts';
+import { routeTo } from '../../lib/route/route-to.ts';
+import { renderRouteButton } from '../shared/render-route-button.ts';
 
 const MEANING: Readonly<Record<string, string>> = {
   true: 'Red number — commercial premises, shops, secondary accesses.',
@@ -28,6 +30,13 @@ export const renderCard = (
         >
         ${hit?.display}
       </h2>
+      ${renderRouteButton('civic-card-route', 'Route to this address', () =>
+        [hit]
+          .filter((value): value is CivicHit => value !== undefined)
+          .forEach((value) =>
+            routeTo({ name: value.display, lat: value.lat, lon: value.lon }),
+          ),
+      )}
       <button
         class="chrome-btn sheet-close"
         data-testid="civic-card-close"

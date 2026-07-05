@@ -43,9 +43,7 @@ export class RoutePlanner extends LitElement {
   protected override render(): TemplateResult {
     return renderPlannerRoot(
       this,
-      () => {
-        this.open = !this.open;
-      },
+      () => appState.plannerOpen.set(!this.open),
       {
         onLocate: this.ctl.locate,
         onClear: this.ctl.clear,

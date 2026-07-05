@@ -38,8 +38,8 @@ export const appState = {
   mePosition: signal<{ readonly lon: number; readonly lat: number } | undefined>(
     undefined,
   ),
-  /** Route planner panel open. */
-  planning: signal<boolean>(false),
+  /** Planner panel visibility (openable from any route-to entry). */
+  plannerOpen: signal<boolean>(false),
   /** City-sweep SIMON rows — positions recompute parametrically. */
   fleetSightings: signal<readonly FleetSighting[]>([]),
   /** Next stop of each tracked vehicle — re-polled every tick. */

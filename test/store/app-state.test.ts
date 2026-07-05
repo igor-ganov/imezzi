@@ -32,7 +32,7 @@ describe('appState', () => {
   });
 
   test('scalar slices start with documented defaults', () => {
-    expect(appState.planning.get()).toBe(false);
+    expect(appState.plannerOpen.get()).toBe(false);
     expect(appState.lastLiveUpdate.get()).toBe(0);
     expect(appState.theme.get()).toBe('light');
   });

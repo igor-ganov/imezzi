@@ -2,6 +2,8 @@ import { LitElement, html, type TemplateResult } from 'lit';
 import { state } from 'lit/decorators.js';
 import type { BoardRow } from '../lib/arrivals/board-row.ts';
 import { branch } from '../lib/branch.ts';
+import { loadStops } from '../lib/data/load-stops.ts';
+import { routeTo } from '../lib/route/route-to.ts';
 import { appState } from '../lib/store/app-state.ts';
 import { makeStopSheetController } from './stop-sheet/controller.ts';
 import { renderSheet } from './stop-sheet/render-sheet.ts';
@@ -31,9 +33,23 @@ export class StopSheet extends LitElement {
     appState.activeStopId.subscribe((id) => this.ctl.onStopChange(id));
   }
 
+  private readonly onRoute = async (): Promise<void> => {
+    const stop = (await loadStops()).find((entry) => entry.id === this.stopId);
+    [stop]
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== undefined)
+      .forEach((entry) =>
+        routeTo({ name: entry.name, lat: entry.lat, lon: entry.lon }),
+      );
+  };
+
   protected override render(): TemplateResult {
     return branch(this.stopId !== undefined)(
-      () => renderSheet(this, () => appState.activeStopId.set(undefined)),
+      () =>
+        renderSheet(
+          this,
+          () => appState.activeStopId.set(undefined),
+          () => void this.onRoute(),
+        ),
       () => html``,
     );
   }

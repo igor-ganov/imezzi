@@ -18,4 +18,7 @@ export const bindPlannerHost = (host: RoutePlannerHost): void => {
   appState.itinerary.subscribe((value) => {
     host.itinerary = value;
   });
+  appState.plannerOpen.subscribe((value) => {
+    host.open = value;
+  });
 };
