@@ -43,7 +43,10 @@ export class RouteSheet extends LitElement {
             }),
           () =>
             renderExpanded(this.itinerary, this.itineraries, () => {
+              // Collapsing means "let me see the map" — the planner
+              // panel folds away with the description.
               this.collapsed = true;
+              appState.plannerOpen.set(false);
             }),
         ),
     );

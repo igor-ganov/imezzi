@@ -22,7 +22,12 @@ test('the itinerary collapses to a mini-bar and expands back', async ({
 }) => {
   await boot(page);
   await planRoute(page);
+  // Reopen the panel (it auto-folds after planning), then collapse:
+  // BOTH surfaces must fold away — the user wants the map.
+  await page.getByTestId('route-fab').click();
+  await expect(page.getByTestId('route-panel')).toBeVisible();
   await page.getByTestId('route-sheet-collapse').click();
+  await expect(page.getByTestId('route-panel')).toHaveCount(0);
   // Collapsed: the full sheet is gone, the summary bar remains with
   // the times and line badges; the route stays on the map.
   await expect(page.getByTestId('route-sheet')).toHaveCount(0);

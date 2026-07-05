@@ -7,7 +7,6 @@ export const PLANNER_LOCATORS: Readonly<
     | 'pickDestination'
     | 'locate'
     | 'destinationInput'
-    | 'altChip'
     | 'clear'
     | 'busy',
     string
@@ -19,7 +18,6 @@ export const PLANNER_LOCATORS: Readonly<
   pickDestination: 'pick-destination',
   locate: 'use-my-location',
   destinationInput: 'destination-input',
-  altChip: 'alt-chip',
   clear: 'route-clear',
   busy: 'route-busy',
 };

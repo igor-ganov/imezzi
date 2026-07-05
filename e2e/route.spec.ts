@@ -38,21 +38,6 @@ test('planning by map picks renders the itinerary sheet', async ({ page }) => {
   ).toHaveAttribute('data-approximated', 'false', { timeout: MAX_WAIT });
 });
 
-test('alternatives switch the active itinerary', async ({ page }) => {
-  await boot(page);
-  await planRoute(page);
-  const chips = page.getByTestId('alt-chip');
-  await expect(chips).toHaveCount(2, { timeout: MAX_WAIT });
-  await chips.nth(1).click();
-  await expect(page.getByTestId('route-leg')).toHaveCount(1, {
-    timeout: MAX_WAIT,
-  });
-  await expect(page.locator('transit-map')).toHaveAttribute(
-    'data-route-legs',
-    '1',
-  );
-});
-
 test('the sheet lists all alternatives as cards with line badges', async ({
   page,
 }) => {
@@ -69,6 +54,22 @@ test('the sheet lists all alternatives as cards with line badges', async ({
   await expect(page.getByTestId('route-leg')).toHaveCount(1, {
     timeout: MAX_WAIT,
   });
+  await expect(page.locator('transit-map')).toHaveAttribute(
+    'data-route-legs',
+    '1',
+  );
+});
+
+test('the planner panel folds away once the route is built', async ({
+  page,
+}) => {
+  await boot(page);
+  await planRoute(page);
+  // The panel is an input surface — with a route on the map it must
+  // not cover the screen; the FAB brings it back for edits.
+  await expect(page.getByTestId('route-panel')).toHaveCount(0);
+  await page.getByTestId('route-fab').click();
+  await expect(page.getByTestId('route-panel')).toBeVisible();
 });
 
 test('clearing the route restores the normal map state', async ({ page }) => {

@@ -22,6 +22,13 @@ export const makePlannerController = (host: PlannerHost) => {
         appState.itineraries.set(itineraries);
         appState.itinerary.set(itineraries[0]);
         host.busy = false;
+        // The panel is an input surface: once a route exists the map
+        // is the point — get out of the way (the FAB reopens it).
+        appState.plannerOpen.set(
+          { true: false, false: appState.plannerOpen.get() }[
+            `${itineraries.length > 0}`
+          ] ?? false,
+        );
       },
       () => Promise.resolve(),
     );

@@ -1,10 +1,12 @@
 import { html, type TemplateResult } from 'lit';
 import { branch } from '../../lib/branch.ts';
 import type { PanelActions, PanelState } from './panel-contract.ts';
-import { renderAlternatives } from './render-alternatives.ts';
 import { PLANNER_LOCATORS } from './route-planner.locators.ts';
 
-/** Panel footer: busy note, alternative chips, clear control. */
+/**
+ * Panel footer: busy note and the clear control. Alternatives moved
+ * to the sheet cards — the panel is purely an input surface.
+ */
 export const renderPanelFooter = (
   state: PanelState,
   actions: PanelActions,
@@ -16,7 +18,6 @@ export const renderPanelFooter = (
       </p>`,
     () => html``,
   )}
-  ${renderAlternatives(state.itineraries, state.itinerary)}
   ${branch(state.itinerary !== undefined || state.origin !== undefined)(
     () =>
       html`<button
