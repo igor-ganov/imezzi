@@ -22,11 +22,22 @@ export const applyTheme = (
   root.style.setProperty('--theme-y', `${point.y}px`);
   root.style.setProperty('--theme-r', `${radius}px`);
   localStorage.setItem('theme-pref', pref);
+  const state = { applied: false };
   const apply = () => {
+    state.applied = true;
     root.dataset['theme'] = theme;
     root.dataset['themePref'] = pref;
     appState.theme.set(theme);
   };
   const start = document.startViewTransition?.bind(document);
   (start ?? ((fn: () => void) => fn()))(apply);
+  // The view transition snapshots the page BEFORE calling apply — on
+  // software GL that snapshot can stall indefinitely, leaving the
+  // theme unapplied. The reveal is decoration, the state is not:
+  // apply directly if the transition has not fired promptly.
+  setTimeout(
+    () =>
+      ({ true: () => undefined, false: apply })[`${state.applied}`](),
+    150,
+  );
 };

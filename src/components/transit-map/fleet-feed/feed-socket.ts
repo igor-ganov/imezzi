@@ -11,6 +11,7 @@ export interface FeedState {
 
 const MAX_FAILURES = 3;
 const RETRY_MS = 3000;
+const CONNECT_TIMEOUT_MS = 4000;
 
 /** Open the hub socket; retries, mute-aware close, fallback hook. */
 export const connectFeed = (state: FeedState, fallback: () => void): void => {
@@ -18,6 +19,17 @@ export const connectFeed = (state: FeedState, fallback: () => void): void => {
     `${location.origin.replace(/^http/, 'ws')}/api/fleet-ws`,
   );
   state.socket = socket;
+  // A server that neither accepts nor rejects the upgrade would hang
+  // the attempt forever — no close event, no failure count, no
+  // fallback. Cap the handshake.
+  const guard = setTimeout(
+    () =>
+      ({ true: () => undefined, false: () => socket.close() })[
+        `${socket.readyState === WebSocket.OPEN}`
+      ]?.(),
+    CONNECT_TIMEOUT_MS,
+  );
+  socket.onopen = () => clearTimeout(guard);
   socket.onmessage = (event) => {
     state.failures = 0;
     const portion: { readonly sightings?: readonly FleetSighting[] } =
@@ -25,6 +37,7 @@ export const connectFeed = (state: FeedState, fallback: () => void): void => {
     applyPortion(portion.sightings ?? []);
   };
   socket.onclose = () => {
+    clearTimeout(guard);
     state.socket = undefined;
     state.failures += { true: 0, false: 1 }[`${state.muted}`] ?? 1;
     const retry = (): void =>
