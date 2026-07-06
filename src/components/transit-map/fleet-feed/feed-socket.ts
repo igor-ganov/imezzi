@@ -1,16 +1,18 @@
-import { branch } from '../../../lib/branch.ts';
 import type { FleetSighting } from '../../../lib/fleet/types.ts';
 import { applyPortion } from './apply-portion.ts';
+import { onFeedClose } from './feed-close.ts';
 
 export interface FeedState {
   failures: number;
-  muted: boolean;
+  /** The socket whose close was intentional (mute/recycle). */
+  muted: WebSocket | undefined;
   socket: WebSocket | undefined;
   hotAt: number;
+  dataAt: number;
+  /** The batch poller took over — stop all socket activity. */
+  fallenBack: boolean;
 }
 
-const MAX_FAILURES = 3;
-const RETRY_MS = 3000;
 const CONNECT_TIMEOUT_MS = 4000;
 
 /** Open the hub socket; retries, mute-aware close, fallback hook. */
@@ -32,27 +34,13 @@ export const connectFeed = (state: FeedState, fallback: () => void): void => {
   socket.onopen = () => clearTimeout(guard);
   socket.onmessage = (event) => {
     state.failures = 0;
+    state.dataAt = Date.now();
     const portion: { readonly sightings?: readonly FleetSighting[] } =
       JSON.parse(`${event.data}`);
     applyPortion(portion.sightings ?? []);
   };
   socket.onclose = () => {
     clearTimeout(guard);
-    state.socket = undefined;
-    state.failures += { true: 0, false: 1 }[`${state.muted}`] ?? 1;
-    const retry = (): void =>
-      void setTimeout(
-        () =>
-          branch(document.hidden)(
-            () => undefined,
-            () => connectFeed(state, fallback),
-          ),
-        RETRY_MS,
-      );
-    branch(state.muted)(
-      () => undefined,
-      () => branch(state.failures >= MAX_FAILURES)(fallback, retry),
-    );
-    state.muted = false;
+    onFeedClose(state, socket, () => connectFeed(state, fallback), fallback);
   };
 };
