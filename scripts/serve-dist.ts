@@ -12,6 +12,10 @@ const resolve = (pathname: string): string =>
 
 Bun.serve({
   port,
+  // Loopback only: binding 0.0.0.0 collides with OUTBOUND sockets
+  // whose ephemeral local port happens to match (observed live: an
+  // established connection at :8791 blocked the listen).
+  hostname: '127.0.0.1',
   fetch: async (request) => {
     const url = new URL(request.url);
     const file = Bun.file(`dist${resolve(url.pathname)}`);

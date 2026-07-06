@@ -2,6 +2,14 @@ import { appState } from '../../lib/store/app-state.ts';
 import { resolveTheme } from '../../lib/theme/resolve-theme.ts';
 
 /**
+ * Monotonic application ticket: a superseded view transition still
+ * runs its update callback LATER than the newer one — without the
+ * ticket a quick second click got overwritten back by the first
+ * click's late apply (the recurring CI race, in three layers deep).
+ */
+const latest = { ticket: 0 };
+
+/**
  * Persist and apply a theme preference with the circular-reveal view
  * transition anchored at the interaction point (site AC-2.2).
  */
@@ -22,12 +30,18 @@ export const applyTheme = (
   root.style.setProperty('--theme-y', `${point.y}px`);
   root.style.setProperty('--theme-r', `${radius}px`);
   localStorage.setItem('theme-pref', pref);
+  latest.ticket += 1;
+  const ticket = latest.ticket;
   const state = { applied: false };
   const apply = () => {
     state.applied = true;
-    root.dataset['theme'] = theme;
-    root.dataset['themePref'] = pref;
-    appState.theme.set(theme);
+    [ticket]
+      .filter((value) => value === latest.ticket)
+      .forEach(() => {
+        root.dataset['theme'] = theme;
+        root.dataset['themePref'] = pref;
+        appState.theme.set(theme);
+      });
   };
   const start = document.startViewTransition?.bind(document);
   (start ?? ((fn: () => void) => fn()))(apply);
