@@ -94,6 +94,13 @@
   box-sizing: border-box;
 }
 
+/* The view-transition overlay covers the page while a theme reveal
+   runs (SECONDS on weak/software-GL devices) and swallows every
+   click — a fast second theme toggle never reached the button. */
+::view-transition {
+  pointer-events: none;
+}
+
 html {
   font-family: var(--font-sans);
   font-size: 100%;

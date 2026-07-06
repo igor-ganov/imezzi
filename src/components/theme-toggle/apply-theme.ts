@@ -43,7 +43,12 @@ export const applyTheme = (
         appState.theme.set(theme);
       });
   };
-  const start = document.startViewTransition?.bind(document);
+  // Respect reduced motion: the reveal is skipped entirely (a11y),
+  // which also removes the transition overlay from the click path.
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const start = { true: undefined, false: document.startViewTransition?.bind(document) }[
+    `${reduced}`
+  ];
   (start ?? ((fn: () => void) => fn()))(apply);
   // The view transition snapshots the page BEFORE calling apply — on
   // software GL that snapshot can stall indefinitely, leaving the

@@ -2,7 +2,11 @@ import { expect, test } from '@playwright/test';
 import { boot } from './helpers/boot.ts';
 import { MAX_WAIT } from './helpers/wait.ts';
 
-test.use({ colorScheme: 'light' });
+// Animation-independent state contract: with reduced motion the app
+// must skip the reveal (a11y) — the pref cycle itself is what this
+// spec pins down. The reveal path is covered by the overlay
+// pointer-events fix + manual observation.
+test.use({ colorScheme: 'light', reducedMotion: 'reduce' });
 
 test('theme starts on system and cycles light → dark → system', async ({
   page,
