@@ -14,7 +14,10 @@ export interface BusDirectionTemplate {
  * Travel-time templates for every bus route (live positioning: a
  * countdown to one stop maps to a point between the two stops the
  * vehicle is actually between). Keyed by normalized short name; the
- * two busiest stop sequences per route are its directions.
+ * busiest stop sequences per route are its direction variants —
+ * top-6, not top-2: shortened runs and branch loops (e.g. night N2
+ * variants) live in the tail, and a vehicle sighted on a variant
+ * pattern found NO serving direction and froze at its anchor stop.
  */
 export const buildBusOffsets = (
   routes: readonly Row[],
@@ -43,7 +46,7 @@ export const buildBusOffsets = (
           weight: Object.values(direction.departures).flat().length,
         }))
         .sort((a, b) => b.weight - a.weight)
-        .slice(0, 2)
+        .slice(0, 6)
         .map(({ direction }) => ({
           stops: direction.stops,
           offsets: direction.offsets,
