@@ -1,4 +1,5 @@
 import { LitElement, html, svg, type TemplateResult } from 'lit';
+import { currentPref } from '../lib/theme/current-pref.ts';
 import { nextPref } from '../lib/theme/next-pref.ts';
 import { applyTheme } from './theme-toggle/apply-theme.ts';
 
@@ -15,13 +16,15 @@ export class ThemeToggle extends LitElement {
   }
 
   private readonly onClick = (event: MouseEvent): void => {
-    const pref = document.documentElement.dataset['themePref'] ?? 'system';
-    applyTheme(nextPref(pref), { x: event.clientX, y: event.clientY });
+    applyTheme(nextPref(currentPref()), {
+      x: event.clientX,
+      y: event.clientY,
+    });
     this.requestUpdate();
   };
 
   protected override render(): TemplateResult {
-    const pref = document.documentElement.dataset['themePref'] ?? 'system';
+    const pref = currentPref();
     return html`
       <button
         class="chrome-btn"
