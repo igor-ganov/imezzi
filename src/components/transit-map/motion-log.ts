@@ -5,6 +5,8 @@ export interface MotionSample {
    *  without it (background rAF throttling stretches frames). */
   readonly dtMs: number;
   readonly vehicles: number;
+  /** Cumulative snap relocations (anomalous data corrections). */
+  readonly snaps: number;
 }
 
 const CAP = 240;
@@ -22,13 +24,18 @@ export const makeMotionLog = () => {
     (globalThis as { readonly __imezzi?: Record<string, unknown> }).__imezzi ??
     {};
   Object.assign(bag, { motionLog: ring });
-  return (stepM: number, vehicles: number, dtMs: number): void => {
+  return (
+    stepM: number,
+    vehicles: number,
+    dtMs: number,
+    snaps: number,
+  ): void => {
     state.worst = Math.max(state.worst, stepM);
     const due = Date.now() - state.lastAt >= SAMPLE_MS;
     [due]
       .filter((value) => value)
       .forEach(() => {
-        ring.push({ t: Date.now(), stepM: state.worst, dtMs, vehicles });
+        ring.push({ t: Date.now(), stepM: state.worst, dtMs, vehicles, snaps });
         ring.splice(0, Math.max(ring.length - CAP, 0));
         state.lastAt = Date.now();
         state.worst = 0;

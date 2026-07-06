@@ -43,13 +43,12 @@ export const vehicleBadgeSpecs = (
       'text-size': ['interpolate', ['linear'], ['zoom'], 11, 10, 16, 13],
       // Overlapping vehicles must not blend their numbers: labels
       // participate in collision (ignore-placement would keep them
-      // OUT of the index — they would not see each other) and slide
-      // to a free side of the dot; in a true pile-up the loser's
-      // text hides while its dot stays visible.
+      // OUT of the index — they would not see each other). The
+      // number stays CENTERED in its own dot — variable anchors made
+      // labels drift outside their circles next to foreign dots —
+      // and in a pile-up the loser's text hides while its dot stays.
       'text-allow-overlap': false,
       'text-ignore-placement': false,
-      'text-variable-anchor': ['center', 'top', 'bottom', 'left', 'right'],
-      'text-radial-offset': 0.2,
       'text-optional': true,
     },
     paint: {

@@ -1,17 +1,14 @@
 import type { FleetMotion } from '../../lib/fleet/fleet-motion.ts';
 import type { VehicleView } from '../../lib/vehicles/types.ts';
-import { bindKeyOf } from './bind-key-of.ts';
 import type { FleetFrame } from './fleet-frame.ts';
-import { publishFrameDebug } from './frame-forensics.ts';
+import { makeFrameTelemetry } from './frame-telemetry.ts';
 import { materializeFrame } from './materialize-frame.ts';
-import { makeMotionLog } from './motion-log.ts';
-import { makeStepMeter } from './measure-steps.ts';
 
 /**
  * Render loop in TIMELINE SPACE: each frame the displayed moments
- * chase the targets (rate-capped, monotonic, stale-frozen) and are
- * materialized through the route geometry — catch-ups drive along
- * the street, chord teleports are impossible by construction. With
+ * chase the targets (rate-capped, monotonic, stale-frozen, snapping
+ * on anomalous corrections) and are materialized through the route
+ * geometry — catch-ups drive along the street. With
  * prefers-reduced-motion, targets are adopted directly.
  */
 export const makeMotionLoop = (
@@ -23,8 +20,7 @@ export const makeMotionLoop = (
     motion: new Map() as FleetMotion,
     lastFrame: 0,
   };
-  const measure = makeStepMeter();
-  const record = makeMotionLog();
+  const telemetry = makeFrameTelemetry(reportStep);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const tick = (time: number): void => {
     const dt = Math.min(Math.max(time - state.lastFrame, 0) / 1000, 0.5);
@@ -39,18 +35,7 @@ export const makeMotionLoop = (
           reduced.matches,
         );
         state.motion = motion;
-        const worst = measure(
-          views.map((view, index) => ({
-            id: view.id,
-            templateKey: bindKeyOf(frame.targets[index]),
-            lon: view.lon,
-            lat: view.lat,
-          })),
-          time,
-        );
-        reportStep(worst);
-        record(worst, views.length, Math.round(dt * 1000));
-        publishFrameDebug(frame.targets, motion, dt);
+        telemetry(frame, motion, views, time, dt);
         render([...frame.schedule, ...views]);
       });
     requestAnimationFrame(tick);

@@ -15,7 +15,7 @@ const target = (over: Partial<MotionTarget>): MotionTarget => ({
 });
 
 const at = (moment: number, templateKey = '1#0'): FleetMotion =>
-  new Map([['bus:09001', { templateKey, moment }]]);
+  new Map([['bus:09001', { templateKey, moment, snaps: 0 }]]);
 
 describe('staleFactor', () => {
   test('fresh full, aging linear, stale frozen', () => {
@@ -43,12 +43,27 @@ describe('motionStep — timeline-space chase', () => {
     expect(next.get('bus:09001')?.moment).toBe(200);
   });
 
-  test('catch-up is capped — a big gap cannot be crossed in a frame', () => {
-    // 900 s behind; one 0.1 s frame may advance at most 6×dt = 0.6 s
-    // of timeline. Kilometres-in-a-blink is impossible by contract.
-    const next = motionStep(at(0), [target({ targetMoment: 900 })], 0.1);
+  test('catch-up is capped — a moderate gap cannot race in a frame', () => {
+    // 100 s behind (under the snap threshold); one 0.1 s frame may
+    // advance at most 6×dt = 0.6 s of timeline.
+    const next = motionStep(at(0), [target({ targetMoment: 100 })], 0.1);
     expect(next.get('bus:09001')?.moment ?? 0).toBeLessThanOrEqual(0.601);
     expect(next.get('bus:09001')?.moment ?? 0).toBeGreaterThan(0);
+  });
+
+  test('an anomalous correction SNAPS instead of racing at 6×', () => {
+    // 900 s ahead = the bus re-appeared several stops away (bad AMT
+    // data). Racing that stretch reads as a light-speed bus — the
+    // marker relocates instantly and the snap is counted.
+    const next = motionStep(at(0), [target({ targetMoment: 900 })], 0.1);
+    expect(next.get('bus:09001')?.moment).toBe(900);
+    expect(next.get('bus:09001')?.snaps).toBe(1);
+  });
+
+  test('snaps accumulate across separate anomalies', () => {
+    const first = motionStep(at(0), [target({ targetMoment: 500 })], 0.1);
+    const second = motionStep(first, [target({ targetMoment: 1200 })], 0.1);
+    expect(second.get('bus:09001')?.snaps).toBe(2);
   });
 
   test('repeated frames converge on the target', () => {
@@ -88,6 +103,6 @@ describe('motionStep — timeline-space chase', () => {
       [target({ templateKey: '1#1', targetMoment: 15 })],
       0.016,
     );
-    expect(next.get('bus:09001')).toEqual({ templateKey: '1#1', moment: 15 });
+    expect(next.get('bus:09001')).toEqual({ templateKey: '1#1', moment: 15, snaps: 0 });
   });
 });
