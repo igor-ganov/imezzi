@@ -41,11 +41,16 @@ export const vehicleBadgeSpecs = (
       'text-field': ['get', 'label'],
       'text-font': ['Noto Sans Bold'],
       'text-size': ['interpolate', ['linear'], ['zoom'], 11, 10, 16, 13],
-      // Overlapping vehicles must not blend their numbers into
-      // gibberish: collisions hide the loser's text while its dot
-      // stays visible, so stacks read as "18 + companions".
+      // Overlapping vehicles must not blend their numbers: labels
+      // participate in collision (ignore-placement would keep them
+      // OUT of the index — they would not see each other) and slide
+      // to a free side of the dot; in a true pile-up the loser's
+      // text hides while its dot stays visible.
       'text-allow-overlap': false,
-      'text-ignore-placement': true,
+      'text-ignore-placement': false,
+      'text-variable-anchor': ['center', 'top', 'bottom', 'left', 'right'],
+      'text-radial-offset': 0.2,
+      'text-optional': true,
     },
     paint: {
       'text-color': CONTRAST[theme],
