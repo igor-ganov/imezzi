@@ -7,4 +7,6 @@ export interface BoardRow {
   /** true = timetable-derived (⚠); false = live SIMON prediction. */
   readonly approximated: boolean;
   readonly full: boolean;
+  /** SIMON NumeroSociale — empty when timetable-derived. */
+  readonly vehicle: string;
 }

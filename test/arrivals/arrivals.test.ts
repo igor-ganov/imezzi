@@ -191,6 +191,7 @@ const timetableRow = (etaSeconds: number): BoardRow => ({
   mode: 'metro',
   destination: 'Brignole',
   etaSeconds,
+  vehicle: '',
   approximated: true,
   full: false,
 });

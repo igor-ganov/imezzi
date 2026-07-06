@@ -9,6 +9,7 @@ const liveRow = (arrival: Arrival, nowSeconds: number): BoardRow => ({
   etaSeconds: parseCountdown(arrival.countdown, nowSeconds),
   approximated: arrival.theoretical,
   full: arrival.full,
+  vehicle: arrival.vehicle,
 });
 
 /**

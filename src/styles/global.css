@@ -475,9 +475,19 @@ line-filter .fab-filter {
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  width: 100%;
   padding: 0.45rem 0.55rem;
+  border: 0;
   border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--surface-2) 60%, transparent);
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.board-row:disabled {
+  cursor: default;
 }
 
 .line-badge {

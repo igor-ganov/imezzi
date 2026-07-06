@@ -27,6 +27,7 @@ const lineRows = (
         etaSeconds: Math.max(eta, 0),
         approximated: true,
         full: false,
+        vehicle: '',
       }));
   });
 

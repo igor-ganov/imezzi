@@ -3,6 +3,7 @@ import type { BoardRow } from '../../lib/arrivals/board-row.ts';
 import { formatEta } from '../../lib/arrivals/format-eta.ts';
 import { MODE_HUES } from '../../lib/map/mode-hues.ts';
 import { branch } from '../../lib/branch.ts';
+import { onRowClick } from './row-click.ts';
 
 const statusBadge = (row: BoardRow): TemplateResult =>
   branch(row.approximated)(
@@ -27,19 +28,27 @@ const fullBadge = (row: BoardRow): TemplateResult =>
     () => html``,
   );
 
-/** One departure-board row: badge, destination, status, ETA. */
+/**
+ * One departure-board row: badge, destination, status, ETA. A live
+ * row is a button — tapping it opens ITS vehicle's sheet.
+ */
 export const renderBoardRow = (row: BoardRow): TemplateResult => html`
-  <li
-    class="board-row"
-    data-testid="board-row"
-    data-line=${row.line}
-    data-approximated=${row.approximated}
-  >
-    <span class="line-badge" style="--hue: ${MODE_HUES[row.mode] ?? 208}"
-      >${row.line}</span
+  <li>
+    <button
+      class="board-row"
+      data-testid="board-row"
+      data-line=${row.line}
+      data-approximated=${row.approximated}
+      data-vehicle=${row.vehicle}
+      ?disabled=${row.vehicle === '' || row.approximated}
+      @click=${() => onRowClick(row)}
     >
-    <span class="board-destination">${row.destination.toLowerCase()}</span>
-    ${fullBadge(row)} ${statusBadge(row)}
-    <span class="board-eta">${formatEta(row.etaSeconds)}</span>
+      <span class="line-badge" style="--hue: ${MODE_HUES[row.mode] ?? 208}"
+        >${row.line}</span
+      >
+      <span class="board-destination">${row.destination.toLowerCase()}</span>
+      ${fullBadge(row)} ${statusBadge(row)}
+      <span class="board-eta">${formatEta(row.etaSeconds)}</span>
+    </button>
   </li>
 `;
