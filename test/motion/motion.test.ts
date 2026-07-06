@@ -44,9 +44,9 @@ describe('motionStep — timeline-space chase', () => {
   });
 
   test('catch-up is capped — a moderate gap cannot race in a frame', () => {
-    // 100 s behind (under the snap threshold); one 0.1 s frame may
+    // 50 s behind (under the snap threshold); one 0.1 s frame may
     // advance at most 6×dt = 0.6 s of timeline.
-    const next = motionStep(at(0), [target({ targetMoment: 100 })], 0.1);
+    const next = motionStep(at(0), [target({ targetMoment: 50 })], 0.1);
     expect(next.get('bus:09001')?.moment ?? 0).toBeLessThanOrEqual(0.601);
     expect(next.get('bus:09001')?.moment ?? 0).toBeGreaterThan(0);
   });
@@ -58,6 +58,17 @@ describe('motionStep — timeline-space chase', () => {
     const next = motionStep(at(0), [target({ targetMoment: 900 })], 0.1);
     expect(next.get('bus:09001')?.moment).toBe(900);
     expect(next.get('bus:09001')?.snaps).toBe(1);
+  });
+
+  test('a STALE oversized gap freezes instead of snapping', () => {
+    // Old data must never teleport the marker.
+    const next = motionStep(
+      at(0),
+      [target({ targetMoment: 900, ageSeconds: 300 })],
+      0.1,
+    );
+    expect(next.get('bus:09001')?.moment).toBe(0);
+    expect(next.get('bus:09001')?.snaps).toBe(0);
   });
 
   test('snaps accumulate across separate anomalies', () => {

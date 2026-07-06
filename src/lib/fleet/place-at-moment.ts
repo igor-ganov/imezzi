@@ -38,7 +38,7 @@ export const placeAtMoment = (
     1,
   );
   const strategies: Readonly<Record<string, () => Placement | undefined>> = {
-    road: () => placeOnRoad(road ?? { path: [], indices: [] }, at, fraction, from ?? [0, 0]),
+    road: () => placeOnRoad(road ?? { path: [], indices: [], bad: [] }, at, fraction, from ?? [0, 0]),
     straight: () => ({
       point: [
         lerp(from?.[0] ?? 0, to?.[0] ?? 0, fraction),
@@ -49,7 +49,12 @@ export const placeAtMoment = (
     none: () => undefined,
   };
   const usable = from !== undefined && to !== undefined;
-  const onRoad = usable && (road?.path.length ?? 0) > 1;
+  const onRoad =
+    usable &&
+    (road?.path.length ?? 0) > 1 &&
+    // A slipped projection on this segment would fly kilometres of
+    // geometry per timeline second — the chord is honest there.
+    road?.bad[at] !== true;
   const key =
     { true: 'road', false: { true: 'straight', false: 'none' }[`${usable}`] }[
       `${onRoad}`

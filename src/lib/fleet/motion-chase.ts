@@ -10,8 +10,9 @@ const MAX_RATE = 6;
  * (a vehicle re-appearing several stops away): racing the whole
  * stretch at 6× reads as a light-speed bus, so the marker RELOCATES
  * instantly instead — and the snap is counted as an anomaly.
+ * (Observation series: 120 s still let buses race up to ~10 stops.)
  */
-const SNAP_SECONDS = 120;
+const SNAP_SECONDS = 60;
 
 /** Glide toward the target; snap on anomalous corrections. */
 export const motionChase = (
@@ -20,9 +21,11 @@ export const motionChase = (
   dtSeconds: number,
 ): MotionState => {
   const gap = target.targetMoment - current.moment;
-  const gain =
-    (1 - Math.exp(-dtSeconds / TAU_SECONDS)) * staleFactor(target.ageSeconds);
+  const freshness = staleFactor(target.ageSeconds);
+  const gain = (1 - Math.exp(-dtSeconds / TAU_SECONDS)) * freshness;
   const step = Math.min(Math.max(gap * gain, 0), MAX_RATE * dtSeconds);
+  // Snap only on FRESH data: a stale target must freeze the marker,
+  // never teleport it.
   return {
     true: (): MotionState => ({
       templateKey: current.templateKey,
@@ -34,5 +37,5 @@ export const motionChase = (
       moment: current.moment + step,
       snaps: current.snaps,
     }),
-  }[`${gap > SNAP_SECONDS}`]();
+  }[`${gap > SNAP_SECONDS && freshness > 0}`]();
 };
