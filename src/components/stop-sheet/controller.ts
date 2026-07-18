@@ -5,6 +5,7 @@ import { fetchJson } from '../../lib/api/fetch-json.ts';
 import { branch } from '../../lib/branch.ts';
 import { loadSchedule } from '../../lib/data/load-schedule.ts';
 import { loadStops } from '../../lib/data/load-stops.ts';
+import { stationName } from '../../lib/map/station-name.ts';
 import { romeClock } from '../../lib/schedule/rome-clock.ts';
 import type { StopSheetHost } from './host.ts';
 
@@ -28,8 +29,11 @@ export const makeStopSheetController = (host: StopSheetHost) => {
       () => Promise.resolve(undefined),
     );
     const clock = romeClock(new Date());
+    const special = schedule.stops[id];
     host.stopName =
-      busStop?.name ?? schedule.stops[id]?.name ?? `Stop ${id}`;
+      busStop?.name ??
+      [special?.name].filter((n): n is string => n !== undefined).map(stationName)[0] ??
+      `Stop ${id}`;
     host.stale = busStop !== undefined && live === undefined;
     host.rows = mergeBoardRows(
       live ?? [],

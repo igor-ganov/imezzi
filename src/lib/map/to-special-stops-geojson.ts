@@ -1,5 +1,6 @@
 import type { Schedule } from '../schedule/types.ts';
 import type { FeatureCollection, PointGeometry } from './geojson.ts';
+import { stationName } from './station-name.ts';
 import { stopModes } from './stop-modes.ts';
 
 export interface SpecialStopProps {
@@ -24,7 +25,11 @@ export const toSpecialStopsGeojson = (
       type: 'Feature',
       id: index,
       geometry: { type: 'Point', coordinates: [stop.lon, stop.lat] },
-      properties: { id, name: stop.name, mode: modes.get(id) ?? 'funicular' },
+      properties: {
+        id,
+        name: stationName(stop.name),
+        mode: modes.get(id) ?? 'funicular',
+      },
     })),
   };
 };
