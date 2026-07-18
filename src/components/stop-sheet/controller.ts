@@ -15,16 +15,22 @@ export const makeStopSheetController = (host: StopSheetHost) => {
   const state: { timer?: ReturnType<typeof setInterval> } = {};
   const refresh = async (): Promise<void> => {
     const id = host.stopId ?? '';
-    const [live, stops, schedule] = await Promise.all([
-      fetchJson<readonly Arrival[]>(`/api/arrivals/${id}`).catch(
-        () => undefined,
-      ),
-      loadStops(),
-      loadSchedule(),
-    ]);
+    const [stops, schedule] = await Promise.all([loadStops(), loadSchedule()]);
+    const busStop = stops.find((stop) => stop.id === id);
+    // Non-bus stations (funicular / lift / metro) are not SIMON stops —
+    // hitting /api/arrivals for them returns *ERR* rows. They live only
+    // in the GTFS timetable, so serve schedule rows and skip the fetch.
+    const live = await branch(busStop !== undefined)(
+      () =>
+        fetchJson<readonly Arrival[]>(`/api/arrivals/${id}`).catch(
+          () => undefined,
+        ),
+      () => Promise.resolve(undefined),
+    );
     const clock = romeClock(new Date());
-    host.stopName = stops.find((stop) => stop.id === id)?.name ?? `Stop ${id}`;
-    host.stale = live === undefined;
+    host.stopName =
+      busStop?.name ?? schedule.stops[id]?.name ?? `Stop ${id}`;
+    host.stale = busStop !== undefined && live === undefined;
     host.rows = mergeBoardRows(
       live ?? [],
       scheduleBoardRows(schedule, id, clock),

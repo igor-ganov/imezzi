@@ -15,6 +15,17 @@ const HALO = { light: '#ffffff', dark: '#10161f' };
 export const specialStopLayerSpecs = (
   theme: 'light' | 'dark',
 ): readonly (CircleLayerSpecification | SymbolLayerSpecification)[] => {
+  const hit: CircleLayerSpecification = {
+    id: 'special-stops-hit',
+    type: 'circle',
+    source: 'special-stops',
+    minzoom: 10,
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 10, 17, 18],
+      'circle-color': 'transparent',
+      'circle-opacity': 0,
+    },
+  };
   const dot: CircleLayerSpecification = {
     id: 'special-stops-dot',
     type: 'circle',
@@ -45,5 +56,5 @@ export const specialStopLayerSpecs = (
       'text-halo-width': 1.4,
     },
   };
-  return [dot, label];
+  return [hit, dot, label];
 };

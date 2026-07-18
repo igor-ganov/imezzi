@@ -7,6 +7,7 @@ import { pinLayerSpecs } from './pin-layer-specs.ts';
 import { routeLayerSpecs } from './route-layer-specs.ts';
 import { specialStopLayerSpecs } from './special-stop-layer-specs.ts';
 import { vehicleLayerSpecs } from './vehicle-layer-specs.ts';
+import { vehicleRouteLayerSpecs } from './vehicle-route-layer-specs.ts';
 
 /** (Re)create imezzi sources and layers after a style (re)load. */
 export const addLayers = (map: MapLibre, theme: 'light' | 'dark'): void => {
@@ -16,6 +17,7 @@ export const addLayers = (map: MapLibre, theme: 'light' | 'dark'): void => {
     'special-stops',
     'route-lines',
     'route',
+    'vehicle-route',
     'vehicles',
     'civics',
     'pin',
@@ -33,6 +35,7 @@ export const addLayers = (map: MapLibre, theme: 'light' | 'dark'): void => {
     ...baseLayerSpecs(theme),
     ...specialStopLayerSpecs(theme),
     ...routeLayerSpecs(theme),
+    ...vehicleRouteLayerSpecs(theme),
     ...vehicleLayerSpecs(theme),
     ...pinLayerSpecs(theme),
     ...meLayerSpecs(),
