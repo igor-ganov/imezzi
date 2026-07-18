@@ -4,8 +4,11 @@ import { branch } from '../branch.ts';
  *  not part of the place name; a lone trailing slash is GTFS noise. */
 const TAG = /\s*\/\s*(imp\s*spec|metro)\s*$/i;
 
+/** Keep as-is: roman numerals (XX) and single-letter initials (B.). */
+const KEEP = /^([IVXLCDM]+|[A-Z]\.)$/;
+
 const titleWord = (word: string): string =>
-  branch(word.length <= 2 && word === word.toUpperCase())(
+  branch(KEEP.test(word))(
     () => word,
     () =>
       word

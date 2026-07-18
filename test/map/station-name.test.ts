@@ -21,6 +21,11 @@ describe('stationName', () => {
     expect(stationName("SANT'ANTONINO/")).toBe("Sant'Antonino");
   });
 
+  test('title-cases ordinary short words but keeps initials', () => {
+    expect(stationName('DE FERRARI/METRO')).toBe('De Ferrari');
+    expect(stationName('VIA B. BIANCO/IMP SPEC')).toBe('Via B. Bianco');
+  });
+
   test('leaves an ordinary place name readable', () => {
     expect(stationName('GENOVA/PIAZZA MANIN')).toBe('Genova/Piazza Manin');
   });
