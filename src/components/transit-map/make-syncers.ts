@@ -1,5 +1,6 @@
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import { uniqueFleetCount } from '../../lib/fleet/unique-fleet-count.ts';
+import { toSpecialStopsGeojson } from '../../lib/map/to-special-stops-geojson.ts';
 import { toStopsGeojson } from '../../lib/map/to-stops-geojson.ts';
 import { toVehiclesGeojson } from '../../lib/map/to-vehicles-geojson.ts';
 import { appState } from '../../lib/store/app-state.ts';
@@ -28,6 +29,11 @@ export const makeSyncers = (
     syncStops: (): void =>
       forData((data) => {
         setSourceData(map, 'stops', toStopsGeojson(data.stops));
+        setSourceData(
+          map,
+          'special-stops',
+          toSpecialStopsGeojson(data.schedule),
+        );
         mark.stops(data.stops.length);
         mark.ready();
         markStopsRendered(map, () => mark.stopsRendered());

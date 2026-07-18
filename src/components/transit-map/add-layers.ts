@@ -5,12 +5,22 @@ import { civicLayerSpecs } from './civic-layer-specs.ts';
 import { meLayerSpecs } from './me-layer-specs.ts';
 import { pinLayerSpecs } from './pin-layer-specs.ts';
 import { routeLayerSpecs } from './route-layer-specs.ts';
+import { specialStopLayerSpecs } from './special-stop-layer-specs.ts';
 import { vehicleLayerSpecs } from './vehicle-layer-specs.ts';
 
 /** (Re)create imezzi sources and layers after a style (re)load. */
 export const addLayers = (map: MapLibre, theme: 'light' | 'dark'): void => {
   addArrowImage(map);
-  ['stops', 'route-lines', 'route', 'vehicles', 'civics', 'pin', 'me'].forEach(
+  [
+    'stops',
+    'special-stops',
+    'route-lines',
+    'route',
+    'vehicles',
+    'civics',
+    'pin',
+    'me',
+  ].forEach(
     (id) =>
       map.getSource(id) ??
       map.addSource(id, {
@@ -21,6 +31,7 @@ export const addLayers = (map: MapLibre, theme: 'light' | 'dark'): void => {
   [
     ...civicLayerSpecs(theme),
     ...baseLayerSpecs(theme),
+    ...specialStopLayerSpecs(theme),
     ...routeLayerSpecs(theme),
     ...vehicleLayerSpecs(theme),
     ...pinLayerSpecs(theme),

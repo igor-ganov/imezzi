@@ -1,6 +1,6 @@
 import { branch } from '../src/lib/branch.ts';
 import type { HubSocket, HubState } from './do-types.ts';
-import { fetchPlan } from './fleet-hub/fetch-plan.ts';
+import fleetPlanIds from './fleet-hub/fleet-plan.json';
 import { hubUpgrade } from './fleet-hub/hub-upgrade.ts';
 import { sweepTick, type SweepCursor } from './fleet-hub/sweep-tick.ts';
 import type { TickEntry } from './fleet-hub/tick-log.ts';
@@ -14,9 +14,15 @@ const HOT_CAP = 60;
  * upstream traffic. Every tick lands in a persisted ring log
  * (/api/fleet-log) with anomaly stamps; consecutive EMPTY polls back
  * the cadence off until data returns (see sweep-tick.ts).
+ *
+ * The sweep plan is a STATIC snapshot (build-fleet-plan.ts), not a
+ * runtime AMT fetch: a colo-pinned `cacheEverything` empty-response
+ * poisoning once left the DO's plan empty for days and silently
+ * killed the entire live fleet. Importing it removes that failure
+ * mode and every plan-fetch subrequest.
  */
 export class FleetHub {
-  private plan: readonly string[] = [];
+  private readonly plan: readonly string[] = fleetPlanIds;
   private at: SweepCursor = { cursor: 0, emptyStreak: 0 };
   private hot: readonly string[] = [];
 
@@ -33,13 +39,6 @@ export class FleetHub {
     );
   }
 
-  private async planOnce(): Promise<readonly string[]> {
-    this.plan = await branch(this.plan.length === 0)(fetchPlan, () =>
-      Promise.resolve(this.plan),
-    );
-    return this.plan;
-  }
-
   async alarm(): Promise<void> {
     const sockets = this.state.getWebSockets();
     await branch(sockets.length === 0)(
@@ -48,7 +47,7 @@ export class FleetHub {
         this.at = await sweepTick(
           this.state,
           sockets,
-          await this.planOnce(),
+          this.plan,
           this.at,
           this.hot,
         );
