@@ -13,8 +13,7 @@
     "data": "bun scripts/build-gtfs.ts",
     "lint": "eslint src test worker scripts",
     "typecheck": "astro check && tsc --noEmit -p tsconfig.test.json",
-    "check": "bun run lint && bun run typecheck && bun run test",
-    "deploy": "wrangler deploy"
+    "check": "bun run lint && bun run typecheck && bun run test"
   },
   "dependencies": {
     "astro": "^5.17.1",
