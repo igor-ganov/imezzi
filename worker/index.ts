@@ -13,7 +13,10 @@ interface Env {
   readonly ASSETS: { fetch: (request: Request) => Promise<Response> };
   readonly FLEET_HUB: {
     readonly idFromName: (name: string) => unknown;
-    readonly get: (id: unknown) => {
+    readonly get: (
+      id: unknown,
+      options?: { readonly locationHint: string },
+    ) => {
       readonly fetch: (request: Request) => Promise<Response>;
     };
   };
@@ -22,8 +25,15 @@ interface Env {
 export default {
   fetch: (request: Request, env: Env): Promise<Response> => {
     const path = new URL(request.url).pathname;
+    // Pin the shared hub to Western Europe: the original colo AMT/Akamai
+    // empty-bodied every upstream request (errors:45/tick, zero
+    // sightings), while request-colo /api hits near Italy fetch fine.
+    // A fresh DO id relocates the singleton with the placement hint —
+    // the hint only applies at creation, so the name must change too.
     const hub = (): Promise<Response> =>
-      env.FLEET_HUB.get(env.FLEET_HUB.idFromName('city')).fetch(request);
+      env.FLEET_HUB.get(env.FLEET_HUB.idFromName('city-eu'), {
+        locationHint: 'weur',
+      }).fetch(request);
     const special: Readonly<Record<string, () => Promise<Response>>> = {
       '/api/fleet-ws': hub,
       '/api/fleet-log': hub,
