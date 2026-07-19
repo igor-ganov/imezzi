@@ -2,6 +2,7 @@ import { branch } from '../branch.ts';
 import type { VehicleView } from '../vehicles/types.ts';
 import { activeServices } from './active-services.ts';
 import { directionVehicles } from './direction-vehicles.ts';
+import { effectiveDay } from './effective-day.ts';
 import { parkedVehicle } from './parked-vehicle.ts';
 import { prevDay } from './prev-day.ts';
 import type { Schedule } from './types.ts';
@@ -11,16 +12,18 @@ import type { Schedule } from './types.ts';
  * live-map AC-1.2). Checks today's services plus yesterday's trips
  * that run past midnight (GTFS times may exceed 24 h). A direction
  * with nothing en route falls back to a car parked at its depot so
- * infrequent modes stay on the map between runs.
+ * infrequent modes stay on the map between runs; an uncovered day
+ * borrows the nearest same-weekday timetable (effectiveDay).
  */
 export const scheduleVehicles = (
   schedule: Schedule,
   clock: { readonly day: string; readonly seconds: number },
 ): readonly VehicleView[] => {
+  const day = effectiveDay(schedule, clock.day);
   const contexts = [
-    { services: activeServices(schedule, clock.day), seconds: clock.seconds },
+    { services: activeServices(schedule, day), seconds: clock.seconds },
     {
-      services: activeServices(schedule, prevDay(clock.day)),
+      services: activeServices(schedule, prevDay(day)),
       seconds: clock.seconds + 86400,
     },
   ];
