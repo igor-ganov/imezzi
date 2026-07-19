@@ -9,6 +9,7 @@ export const renderVehicleSheet = (
   label: string,
   headsign: string,
   rows: readonly VehicleBoardRow[],
+  onCollapse: () => void,
   onClose: () => void,
 ): TemplateResult => html`
   <section
@@ -21,14 +22,12 @@ export const renderVehicleSheet = (
         <span class="line-badge" style="--mode-hue: 210">${label}</span>
         → ${headsign.toLowerCase()}
       </h2>
-      <button
-        class="chrome-btn sheet-close"
-        data-testid="vehicle-sheet-close"
-        aria-label="Close"
-        @click=${onClose}
-      >
-        ✕
-      </button>
+      <span class="strip-actions">
+        <button class="chrome-btn" data-testid="vehicle-sheet-collapse"
+          aria-label="Collapse" @click=${onCollapse}>▾</button>
+        <button class="chrome-btn sheet-close" data-testid="vehicle-sheet-close"
+          aria-label="Close" @click=${onClose}>✕</button>
+      </span>
     </header>
     <ul class="board">
       ${rows.map(
