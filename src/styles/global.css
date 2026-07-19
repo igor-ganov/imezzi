@@ -557,7 +557,7 @@ line-filter .fab-filter {
   font-weight: 700;
 }
 
-/* Collapsed vehicle sheet — metro-style line strip (vehicle US-1) */
+/* Collapsed vehicle sheet — metro-style line diagram (vehicle US-1) */
 .strip-actions {
   display: flex;
   flex: none;
@@ -568,88 +568,123 @@ line-filter .fab-filter {
   max-height: none;
 }
 
-.strip-progress {
-  height: 4px;
-  margin: 0.1rem 0 0.7rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--surface-2) 75%, transparent);
-  overflow: hidden;
-}
-
-.strip-progress-fill {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--accent);
-  transition: width var(--speed) ease-out;
-}
-
-.strip-rail {
-  list-style: none;
-  margin: 0;
-  padding: 0.1rem 0.1rem 0.3rem;
-  display: flex;
+.diagram {
   overflow-x: auto;
   scrollbar-width: thin;
+  padding: 0.2rem 0;
 }
 
-.strip-stop {
+.diag-track {
+  --step: 6.5rem;
+  --line-y: 2.1rem;
   position: relative;
-  flex: 0 0 auto;
-  min-width: 4.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  width: max-content;
+}
+
+.diag-stop {
+  position: relative;
+  flex: 0 0 var(--step);
+  width: var(--step);
+  padding-top: calc(var(--line-y) + 0.55rem);
   display: grid;
   justify-items: center;
-  gap: 0.3rem;
-  color: var(--ink);
+  color: var(--ink-soft);
 }
 
-.strip-stop::before {
+/* the rail segment linking this stop to the next */
+.diag-stop::before {
   content: '';
   position: absolute;
-  top: 6px;
+  top: var(--line-y);
   left: 50%;
   width: 100%;
-  height: 2px;
-  background: var(--accent);
+  height: 3px;
+  background: var(--line);
 }
 
-.strip-stop:last-child::before {
+.diag-stop:last-child::before {
   display: none;
 }
 
-.strip-dot {
-  position: relative;
-  z-index: 1;
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  border: 2px solid var(--accent);
-  background: var(--surface);
+.diag-stop.is-behind::before {
+  background: var(--accent);
 }
 
-.strip-name {
-  max-width: 5rem;
+.diag-dot {
+  position: absolute;
+  top: calc(var(--line-y) - 4px);
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: var(--surface);
+  z-index: 1;
+}
+
+.diag-stop.is-reached .diag-dot {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.diag-stop.is-flank .diag-dot {
+  width: 14px;
+  height: 14px;
+  top: calc(var(--line-y) - 5px);
+  border-color: var(--accent);
+}
+
+.diag-name {
+  max-width: calc(var(--step) - 0.5rem);
   font-size: var(--step--1);
   line-height: 1.15;
   text-align: center;
   text-transform: capitalize;
 }
 
-.strip-stop.is-passed {
-  color: var(--ink-soft);
+.diag-stop.is-flank .diag-name,
+.diag-stop.is-me .diag-name {
+  color: var(--ink);
+  font-weight: 600;
 }
 
-.strip-stop.is-passed .strip-dot,
-.strip-stop.is-passed::before {
-  border-color: var(--line);
-  background: var(--line);
+/* the vehicle, riding the rail between its two current stops */
+.diag-bus {
+  position: absolute;
+  top: var(--line-y);
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  color: var(--surface);
+  background: var(--accent);
+  box-shadow: 0 1px 5px rgb(0 0 0 / 0.4);
+  transition: left var(--speed) linear;
 }
 
-.strip-stop.is-next .strip-dot {
+.diag-bus svg {
   width: 17px;
   height: 17px;
-  background: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+/* "you are here" pin, dropped above the nearest stop */
+.diag-me {
+  position: absolute;
+  top: 0.15rem;
+  transform: translateX(-50%);
+  z-index: 2;
+  color: var(--live);
+  line-height: 0;
+}
+
+.diag-me svg {
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.4));
 }
 
 /* Route planner (route-planner US-1..US-4) */

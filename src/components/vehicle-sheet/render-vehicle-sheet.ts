@@ -1,5 +1,6 @@
 import { html, type TemplateResult } from 'lit';
 import type { VehicleBoardRow } from '../../lib/fleet/vehicle-board.ts';
+import { sheetIcons } from './icons.ts';
 
 const minutes = (etaSeconds: number): string =>
   `${Math.max(Math.round(etaSeconds / 60), 0)} min`;
@@ -24,9 +25,9 @@ export const renderVehicleSheet = (
       </h2>
       <span class="strip-actions">
         <button class="chrome-btn" data-testid="vehicle-sheet-collapse"
-          aria-label="Collapse" @click=${onCollapse}>▾</button>
+          aria-label="Collapse" @click=${onCollapse}>${sheetIcons.collapse}</button>
         <button class="chrome-btn sheet-close" data-testid="vehicle-sheet-close"
-          aria-label="Close" @click=${onClose}>✕</button>
+          aria-label="Close" @click=${onClose}>${sheetIcons.close}</button>
       </span>
     </header>
     <ul class="board">
