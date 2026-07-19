@@ -7,6 +7,11 @@ import { sheetIcons } from './icons.ts';
 const at = (position: number): string =>
   `calc(var(--step) * ${position} + var(--step) / 2)`;
 
+/** Let long "Street/Corner" names wrap at the slash, not mid-word by
+ *  appending a zero-width space (an invisible break opportunity). */
+const wrappable = (name: string): string =>
+  name.toLowerCase().replaceAll('/', `/${String.fromCharCode(0x200b)}`);
+
 const stopItem = (name: string, index: number, diagram: LineDiagram): TemplateResult => html`
   <li class=${classMap({
     'diag-stop': true,
@@ -16,7 +21,7 @@ const stopItem = (name: string, index: number, diagram: LineDiagram): TemplateRe
     'is-me': index === diagram.meAt,
   })}>
     <span class="diag-dot"></span>
-    <span class="diag-name">${name.toLowerCase()}</span>
+    <span class="diag-name">${wrappable(name)}</span>
   </li>
 `;
 
