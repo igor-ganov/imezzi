@@ -2,15 +2,16 @@ import type {
   CircleLayerSpecification,
   SymbolLayerSpecification,
 } from 'maplibre-gl';
-import { byModeColor } from './by-mode-color.ts';
+import { byModeIcon } from './by-mode-icon.ts';
 
+const TEXT = { light: 'hsl(215 25% 27%)', dark: 'hsl(210 20% 92%)' };
 const HALO = { light: '#ffffff', dark: '#10161f' };
 
 /**
- * Non-bus stations (funicular / cremagliera / metro / lift): loud
- * mode-coloured dots shown from a lower zoom than the small grey bus
- * chrome — these are landmarks, and the CSV-only bus stops never drew
- * them at all. Names label in once the viewer is close.
+ * Non-bus stations (funicular / cremagliera / metro / lift): the same
+ * monochrome POI symbols as the bus stops, but each drawn with the
+ * sprite icon that names its type. The station name fades in a zoom
+ * later so the icons stay clean when the city is in view.
  */
 export const specialStopLayerSpecs = (
   theme: 'light' | 'dark',
@@ -19,42 +20,35 @@ export const specialStopLayerSpecs = (
     id: 'special-stops-hit',
     type: 'circle',
     source: 'special-stops',
-    minzoom: 10,
+    minzoom: 13,
     paint: {
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 10, 17, 18],
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 13, 12, 17, 20],
       'circle-color': 'transparent',
       'circle-opacity': 0,
     },
   };
-  const dot: CircleLayerSpecification = {
-    id: 'special-stops-dot',
-    type: 'circle',
-    source: 'special-stops',
-    minzoom: 10,
-    paint: {
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 4, 17, 8],
-      'circle-color': byModeColor(theme),
-      'circle-stroke-color': HALO[theme],
-      'circle-stroke-width': 2,
-    },
-  };
-  const label: SymbolLayerSpecification = {
-    id: 'special-stops-label',
+  const icon: SymbolLayerSpecification = {
+    id: 'special-stops-icon',
     type: 'symbol',
     source: 'special-stops',
     minzoom: 13,
     layout: {
+      'icon-image': byModeIcon(),
+      'icon-size': ['interpolate', ['linear'], ['zoom'], 13, 0.95, 17, 1.5],
+      'icon-allow-overlap': true,
       'text-field': ['get', 'name'],
       'text-font': ['Noto Sans Regular'],
       'text-size': 11,
-      'text-offset': [0, 1.1],
+      'text-offset': [0, 1.2],
       'text-anchor': 'top',
+      'text-optional': true,
     },
     paint: {
-      'text-color': byModeColor(theme),
+      'text-color': TEXT[theme],
       'text-halo-color': HALO[theme],
       'text-halo-width': 1.4,
+      'text-opacity': ['interpolate', ['linear'], ['zoom'], 13.5, 0, 14.5, 1],
     },
   };
-  return [hit, dot, label];
+  return [hit, icon];
 };
